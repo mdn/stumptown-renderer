@@ -17,27 +17,11 @@ const app = express();
 app.use(express.json());
 
 const STATIC_ROOT = path.join(__dirname, "../client/build");
-const CONTENT_ALL_TITLES = path.join(__dirname, "../content/_all-titles.json");
 
 // The client/build directory is won't exist at the very very first time
 // you start the server after a fresh git clone.
 if (!fs.existsSync(STATIC_ROOT)) {
   fs.mkdirSync(STATIC_ROOT);
-}
-
-function getFolderFromURI(uri) {
-  // The file CONTENT_ALL_TITLES has a complete list of every *known* URI
-  // and what file, on disk, it corresponds to.
-  // Let's open this file dynamically each time because there's not much
-  // benefit in caching it once since it might change after this server
-  // has started.
-  const allUris = JSON.parse(fs.readFileSync(CONTENT_ALL_TITLES));
-  for (const key of Object.keys(allUris)) {
-    if (key.toLowerCase() === uri.toLowerCase()) {
-      return allUris[key].file;
-    }
-  }
-  return null;
 }
 
 // A global where we stuff ALL redirects possible.
@@ -533,80 +517,7 @@ app.get("/*", async (req, res) => {
     }
   }
 
-  if (req.url.includes("/docs/")) {
-    let lookupUrl = req.url;
-    let extraSuffix = "";
-
-    if (req.url.endsWith("index.json")) {
-      // It's a bit special then.
-      // The URL like me something like
-      // /en-US/docs/HTML/Global_attributes/index.json
-      // and that won't be found in getRedirectUrl() since that doesn't
-      // index things with the '/index.json' suffix. So we need to
-      // temporarily remove it and remember to but it back when we're done.
-      extraSuffix = "/index.json";
-      lookupUrl = lookupUrl.replace(extraSuffix, "");
-    }
-
-    const redirectUrl = getRedirectUrl(lookupUrl);
-    if (redirectUrl) {
-      return res.redirect(301, redirectUrl + extraSuffix);
-    }
-
-    // If it wasn't a redirect, it has to be possible to build!
-    const folderName = getFolderFromURI(lookupUrl);
-    if (!folderName) {
-      return res
-        .status(404)
-        .send(`Can not finder a folder based on ${lookupUrl}`);
-    }
-    const specificFolder = normalizeContentPath(folderName);
-
-    // Check that it even makes sense!
-    if (specificFolder) {
-      const t0 = performance.now();
-      try {
-        const built = await getOrCreateBuilder().start({
-          specificFolders: [specificFolder],
-        });
-        const t1 = performance.now();
-        // Remember, the only reason we're here in the catch-all is because
-        // Express couldn't find the file as a static asset. But might
-        // actually already be built because inside the Builder it might
-        // have transformed the URL to something that doesn't match what
-        // it's called on disk.
-        // If that's the case, then `built[0].result === 'already'`.
-        if (built[0].result === "already") {
-          console.log(
-            `Actually already built ${path.join(
-              path.dirname(built[0].file),
-              extraSuffix
-            )} (${(t1 - t0).toFixed()}ms)`
-          );
-        } else {
-          // XXX Should this also log about flaws??
-          console.log(
-            `Successfully on-the-fly built ${path.join(
-              path.dirname(built[0].file),
-              extraSuffix
-            )} (${(t1 - t0).toFixed()}ms)`
-          );
-        }
-        if (extraSuffix == "/index.json") {
-          res.sendFile(built[0].jsonFile);
-        } else {
-          res.sendFile(built[0].file);
-        }
-      } catch (ex) {
-        console.error(ex);
-        res.status(500).send(ex.toString());
-      }
-    } else {
-      res
-        .status(404)
-        .send("Page not found. Not a redirect or a real directory");
-    }
-  } else {
+  if (!req.url.includes("/docs/")) {
     // This should really only be expected for "single page apps".
     // All *documents* should be handled by the
     // `if (req.url.includes("/docs/"))` test above.

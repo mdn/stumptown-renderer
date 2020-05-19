@@ -1,5 +1,5 @@
-import cheerio from "cheerio";
-import Prism from "prismjs";
+const cheerio = require("cheerio");
+const Prism = require("prismjs");
 
 // Memoization cache for getPrismPluginName()
 const _prismPluginNames = new Map();
@@ -27,7 +27,7 @@ function getPrismPluginName(classList) {
   return null;
 }
 
-export function fixSyntaxHighlighting(document) {
+function fixSyntaxHighlighting(document) {
   if (!document.body) {
     throw new Error("Expecting document.body and it being an array");
   }
@@ -111,3 +111,5 @@ function highlightSources(sources) {
     }
   });
 }
+
+module.exports = { fixSyntaxHighlighting };

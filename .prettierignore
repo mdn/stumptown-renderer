@@ -16,10 +16,10 @@ content/_all-titles.json
 /content/node_modules/
 /cli/node_modules/
 /deployment/node_modules/
-/client/src/water.css/
+/web/client/water.css/
 /archivecontent/
 /content/files/
 /kumascript/coverage/
 
 # Misc files to ignore
-/client/src/serviceWorker.js
+/web/client/serviceWorker.js

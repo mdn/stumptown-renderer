@@ -9,9 +9,9 @@
     "#postinstall": "cd stumptown && npm install && git checkout package-lock.json",
     "prettier-check": "prettier --check '**/*.{js,ts,tsx,json,scss,html}'",
     "prettier-format": "prettier --write '**/*.{js,ts,tsx,json,scss,html}'",
-    "test": "yarn prettier-check && yarn workspace client test",
+    "test": "yarn prettier-check && yarn workspace web test",
     "build:stumptown": "cd ${STUMPTOWN_CONTENT_ROOT:-stumptown} && npm run build-json",
-    "build:client": "yarn workspace client build",
+    "build:client": "yarn workspace web build",
     "build:ssr": "yarn workspace ssr build",
     "clean": "rm -fr client/build && rm -fr ssr/dist && rm -fr content/_all-titles.json",
     "prebuild": "yarn build:client && yarn build:ssr && node content build --ensure-titles",
@@ -19,9 +19,9 @@
   },
   "private": true,
   "workspaces": [
-    "client",
     "server",
     "ssr",
+    "web",
     "content",
     "kumascript"
   ],

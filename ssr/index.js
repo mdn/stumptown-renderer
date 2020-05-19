@@ -1,12 +1,8 @@
-import React from "react";
-import fs from "fs";
-import path from "path";
-import { StaticRouter } from "react-router-dom/server";
+const fs = require("fs");
+const path = require("path");
 
-import { App } from "../client/src/app";
-import render from "./render";
-import { fixSyntaxHighlighting } from "./syntax-highlighter";
-import { normalizeURLs } from "./browser-compatibility-table";
+const { fixSyntaxHighlighting } = require("./syntax-highlighter");
+const { normalizeURLs } = require("./browser-compatibility-table");
 
 // This is necessary because the ssr.js is in dist/ssr.js
 // and we need to reach the .env this way.
@@ -99,15 +95,13 @@ function addBreadcrumbData(uri, document, allTitles) {
   }
 }
 
-export function buildHtmlAndJsonFromDoc({
+function buildHtmlAndJsonFromDoc({
   doc,
   destinationDir,
   buildHtml,
   allTitles,
 }) {
   const options = { doc };
-
-  let rendered = null;
 
   // always expect this to be a relative URL
   if (!options.doc.mdn_url.startsWith("/")) {
@@ -140,22 +134,8 @@ export function buildHtmlAndJsonFromDoc({
   const outfileHtml = path.join(destinationDir, "index.html");
   const outfileJson = path.join(destinationDir, "index.json");
 
-  if (buildHtml) {
-    rendered = render(
-      React.createElement(
-        StaticRouter,
-        { location: uri, context: options },
-        React.createElement(App, options)
-      ),
-      options
-    );
-  }
-
   let wasRendered = false;
-  if (rendered) {
-    fs.writeFileSync(outfileHtml, rendered);
-    wasRendered = true;
-  }
+
   fs.writeFileSync(
     outfileJson,
     process.env.NODE_ENV === "development"
@@ -165,3 +145,5 @@ export function buildHtmlAndJsonFromDoc({
 
   return { uri, wasRendered, outfileHtml, outfileJson };
 }
+
+module.exports = { buildHtmlAndJsonFromDoc };

@@ -1,0 +1,52 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MPL-2.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "tsc --noEmit && jest --env=jest-environment-jsdom-sixteen"
+  },
+  "dependencies": {
+    "@types/jest": "^25.2.2",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
+    "@types/throttle-debounce": "2.1.0",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "flexsearch": "0.6.32",
+    "fuzzysearch": "1.0.3",
+    "include-media": "1.4.9",
+    "next": "9.4.0",
+    "node-sass": "4.14.1",
+    "prismjs": "1.20.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "sockette": "2.0.6",
+    "swr": "0.2.0",
+    "throttle-debounce": "2.1.0",
+    "typeface-zilla-slab": "0.0.72",
+    "typescript": "^3.9.2"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^10.0.4",
+    "@types/jest": "^25.2.2",
+    "jest": "^26.0.1",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
+    "mdn-browser-compat-data": "^1.0.21"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

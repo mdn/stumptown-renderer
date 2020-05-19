@@ -1,6 +1,6 @@
 const url = require("url");
 
-export function normalizeURLs(doc) {
+function normalizeURLs(doc) {
   // Loop over, and mutate, all 'browser_compatibility' sections.
   // BCD data comes froms from a library with `mdn_url`'s that are absolute.
   // This takes the `mdn_url` and sets it to a URI that can be used when
@@ -34,3 +34,5 @@ function getPathFromAbsoluteURL(absURL) {
   // not needed.
   return u.pathname.replace("/docs/", "");
 }
+
+module.exports = { normalizeURLs };
