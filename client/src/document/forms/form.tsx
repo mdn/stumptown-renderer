@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useDebouncedCallback } from "use-debounce";
+import AceEditor from "react-ace";
+
+import "ace-builds/src-noconflict/mode-html";
+import "ace-builds/src-noconflict/theme-github";
 
 import "./form.scss";
 import useSWR from "swr";
@@ -108,7 +112,7 @@ export function DocumentForm({
       }}
     >
       <div>
-        <label>
+        <label style={{ display: "flex", alignItems: "center" }}>
           Slug
           <input
             disabled={disableInputs}
@@ -130,15 +134,13 @@ export function DocumentForm({
           </div>
         )}
       </div>
-
       {didSlugChange && canAutosave && (
         <div>
           Autosave has been temporarily disabled until the new slug is saved!
         </div>
       )}
-
       <p>
-        <label>
+        <label style={{ display: "flex", alignItems: "center" }}>
           Title
           <input
             disabled={disableInputs}
@@ -149,14 +151,17 @@ export function DocumentForm({
           />
         </label>
       </p>
-
-      <textarea
-        disabled={disableInputs}
+      <AceEditor
+        mode="html"
+        theme="github"
         value={rawHTML}
-        onChange={(event) => setRawHtml(event.target.value)}
-        rows={30}
-        style={{ width: "100%" }}
+        width="100%"
+        wrapEnabled={true}
+        onChange={(value) => setRawHtml(value)}
+        name="quickEdit"
+        editorProps={{ $blockScrolling: true }}
       />
+      ,
       <p>
         <button
           type="submit"

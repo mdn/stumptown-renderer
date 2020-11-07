@@ -17,5 +17,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "ace-builds": "^1.4.12",
+    "react-ace": "^9.1.4"
   }
 }
