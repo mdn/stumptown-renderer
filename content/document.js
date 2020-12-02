@@ -88,6 +88,18 @@ function urlToFolderPath(url) {
   return path.join(locale.toLowerCase(), slugToFolder(slugParts.join("/")));
 }
 
+function htmlPathToSlugAndLocale(filePath, root = CONTENT_ROOT) {
+  const {
+    metadata: { slug },
+  } = readRawContent(path.join(root, filePath));
+  const filePathRe = new RegExp(`^.*/([A-za-z-]+)/${slug}/index.html`, "i");
+  const [, locale] = filePathRe.exec(filePath) || [];
+  if (!locale) {
+    throw new Error(`could not parse locale for ${filePath}`);
+  }
+  return { slug, locale };
+}
+
 function create(html, metadata) {
   const folderPath = getFolderPath(metadata);
 
@@ -139,6 +151,16 @@ function archive(renderedHTML, rawHTML, metadata, isTranslatedContent = false) {
   return folderPath;
 }
 
+function readRawContent(filePath) {
+  const rawContent = fs.readFileSync(filePath, "utf8");
+  const {
+    attributes: metadata,
+    body: rawHTML,
+    bodyBegin: frontMatterOffset,
+  } = fm(rawContent);
+  return { metadata, rawHTML, frontMatterOffset, rawContent };
+}
+
 const read = memoize((folder) => {
   let filePath = null;
   let root = null;
@@ -162,12 +184,9 @@ const read = memoize((folder) => {
     isTranslated ||
     (CONTENT_ARCHIVED_ROOT && filePath.startsWith(CONTENT_ARCHIVED_ROOT));
 
-  const rawContent = fs.readFileSync(filePath, "utf8");
-  const {
-    attributes: metadata,
-    body: rawHTML,
-    bodyBegin: frontMatterOffset,
-  } = fm(rawContent);
+  const { metadata, rawHTML, frontMatterOffset, rawContent } = readRawContent(
+    filePath
+  );
 
   const locale = extractLocale(folder);
   const url = `/${locale}/docs/${metadata.slug}`;
@@ -454,6 +473,7 @@ module.exports = {
   validate,
 
   urlToFolderPath,
+  htmlPathToSlugAndLocale,
   getFolderPath,
   fileForSlug,
   parentSlug,

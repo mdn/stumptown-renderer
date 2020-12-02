@@ -7,7 +7,7 @@ const fs = require("fs");
 const path = require("path");
 
 const { DEFAULT_LOCALE, VALID_LOCALES } = require("../libs/constants");
-const { Redirect, Document, buildURL } = require("../content");
+const { Redirect, Document, buildURL, GitHub } = require("../content");
 const { buildDocument } = require("../build");
 
 const PORT = parseInt(process.env.SERVER_PORT || "5000");
@@ -275,6 +275,28 @@ program
       if (run) {
         buildDocument(document, { fixFlaws: true, fixFlawsVerbose: true });
       }
+    })
+  )
+
+  .command("view-pr", "Preview a pull request")
+  .argument("<url>", "PR-URL", {
+    validator: (value) => {
+      return GitHub.getPRId(value) && value;
+    },
+  })
+  .action(
+    tryOrExit(({ args }) => {
+      const { url } = args;
+      for (const preview of GitHub.checkoutPR(url).map(
+        ({ url, slug }) =>
+          `preview ${chalk.bold(slug)} → http://localhost:${PORT}${url}`
+      )) {
+        console.log(preview);
+      }
+      console.log(chalk.green(`✔ checked out PR: ${url}`));
+      console.log(
+        `Don't for get to run ${chalk.bold("git checkout main")} when done!`
+      );
     })
   );
 

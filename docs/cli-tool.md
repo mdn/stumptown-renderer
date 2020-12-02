@@ -56,3 +56,7 @@ dev-server (`yarn start`).
 ### flaws
 
 Show and optionally fix fixable flaws for a given slug.
+
+### view-pr
+
+Fetch PR changes from GitHub and preview them locally.

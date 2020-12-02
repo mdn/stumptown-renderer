@@ -12,6 +12,7 @@ const Redirect = require("./redirect");
 const Image = require("./image");
 const { buildURL, memoize, slugToFolder, execGit } = require("./utils");
 const { resolveFundamental } = require("../libs/fundamental-redirects");
+const GitHub = require("./github");
 
 module.exports = {
   CONTENT_ROOT,
@@ -26,6 +27,7 @@ module.exports = {
   Document,
   Redirect,
   Image,
+  GitHub,
 
   buildURL,
   memoize,
