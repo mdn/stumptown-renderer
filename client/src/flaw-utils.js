@@ -11,6 +11,7 @@ export function humanizeFlawName(name) {
     bad_bcd_queries: "Bad BCD queries",
     bad_bcd_links: "Bad BCD links",
     pre_with_html: "<pre> with HTML",
+    pre_with_js_innerhtml: "<pre> with JS innerHTML",
   };
   function fallback() {
     return name.charAt(0).toUpperCase() + name.slice(1).replace(/_/g, " ");

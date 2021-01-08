@@ -46,6 +46,8 @@ export interface PreWithHTMLFlaw extends GenericFlaw {
   column?: number;
 }
 
+export interface PreWithJSinnerHTMLFlaw extends GenericFlaw {}
+
 export interface MacroErrorMessage extends GenericFlaw {
   name: string;
   error: {
@@ -69,6 +71,7 @@ type Flaws = {
   bad_bcd_links: BadBCDLinkFlaw[];
   images: ImageReferenceFlaw[];
   pre_with_html: PreWithHTMLFlaw[];
+  pre_with_js_innerhtml: PreWithJSinnerHTMLFlaw[];
   sectioning: SectioningFlaw[];
   image_widths: ImageWidthFlaw[];
 };

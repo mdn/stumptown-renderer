@@ -29,6 +29,7 @@ const VALID_FLAW_CHECKS = new Set([
   "images",
   "image_widths",
   "pre_with_html",
+  "pre_with_js_innerhtml",
   "sectioning",
 ]);
 

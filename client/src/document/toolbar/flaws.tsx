@@ -17,6 +17,7 @@ import {
   GenericFlaw,
   BadBCDQueryFlaw,
   PreWithHTMLFlaw,
+  PreWithJSinnerHTMLFlaw,
   SectioningFlaw,
 } from "../types";
 import "./flaws.scss";
@@ -220,6 +221,13 @@ function Flaws({ doc, flaws }: { doc: Doc; flaws: FlawCount[] }) {
                 key="pre_with_html"
                 sourceFolder={doc.source.folder}
                 flaws={doc.flaws.pre_with_html}
+              />
+            );
+          case "pre_with_js_innerhtml":
+            return (
+              <PreWithJSinnerHTML
+                key="pre_with_js_innerhtml"
+                flaws={doc.flaws.pre_with_js_innerhtml}
               />
             );
           case "macros":
@@ -475,6 +483,39 @@ function Sectioning({ flaws }: { flaws: SectioningFlaw[] }) {
               Usually this means there's something in the raw content that makes
               it hard to split up the rendered HTML. Perhaps delete unnecessary
               empty divs.
+            </small>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function PreWithJSinnerHTML({ flaws }: { flaws: PreWithJSinnerHTMLFlaw[] }) {
+  const { focus } = useAnnotations(flaws);
+  return (
+    <div className="flaw flaw__pre_with_js_innerhtml">
+      <h3>{humanizeFlawName("pre_with_js_innerhtml")}</h3>
+      <ul>
+        {flaws.map((flaw) => (
+          <li key={flaw.id}>
+            Avoid <code>innerHTML</code>
+            <span
+              role="img"
+              aria-label="Click to scroll to the JS example"
+              title="Click to scroll to the JS example"
+              style={{ cursor: "zoom-in" }}
+              onClick={() => {
+                focus(flaw.id);
+              }}
+            >
+              👀
+            </span>{" "}
+            <br />
+            <small>
+              <a href="/en-US/docs/MDN/Guidelines/Code_guidelines/JavaScript#Use_textContent_not_innerHTML">
+                Consider using <code>textContent</code> instead.
+              </a>
             </small>
           </li>
         ))}

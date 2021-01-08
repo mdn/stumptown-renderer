@@ -36,6 +36,13 @@ function injectFlaws(doc, $, options, { rawContent }) {
     $,
     rawContent
   );
+
+  injectPreWithJSinnerHTMLFlaws(
+    options.flawLevels.get("pre_with_js_innerhtml"),
+    doc,
+    $,
+    rawContent
+  );
 }
 
 function injectSectionFlaws(doc, flaws, options) {
@@ -328,6 +335,75 @@ function injectPreWithHTMLFlaws(level, doc, $, rawContent) {
   ) {
     throw new Error(
       `pre_with_html flaws: ${doc.flaws.pre_with_html.map(JSON.stringify)}`
+    );
+  }
+}
+
+// MDN has a guideline to avoid innerHTML in JS examples, but despite it writers
+// sometimes use it. Almost always it's possible to use only textContent and cloneNode
+// and other functions to avoid converting HTML to string and then to HTML.
+//
+// This flaw check looks for <pre class="...brush..."> which contain JS code
+// with string "innerHTML". Note that content denoted with class hidden is ignored
+// because it's not actually visible to readers.
+//
+// There is no automatic fixing for this flaw.
+function injectPreWithJSinnerHTMLFlaws(level, doc, $) {
+  if (level === FLAW_LEVELS.IGNORE) return;
+
+  function addFlaw($pre) {
+    if (!("pre_with_js_innerhtml" in doc.flaws))
+      doc.flaws.pre_with_js_innerhtml = [];
+
+    const id = `pre_with_js_innerhtml${
+      doc.flaws.pre_with_js_innerhtml.length + 1
+    }`;
+
+    const flaw = {
+      explanation: "Avoid innerHTML",
+      id: id,
+      fixable: false,
+    };
+
+    $pre.attr("data-flaw", id);
+
+    doc.flaws.pre_with_js_innerhtml.push(flaw);
+  }
+
+  // Matches all <pre class="...brush..."> that are not within node with class hidden
+  // and contain string innerHTML.
+  // These are all code examples on the page which are visible to viewers.
+  // Note, that this test might produce false positives.
+  // This is not the most scientific approach, but it's a decent heruistic.
+  $("pre[class*=brush]").each((i, element) => {
+    // Check that the code contains string innerHTML
+    const code = $(element).text();
+    const containsInnerHTML = code.indexOf("innerHTML") !== -1;
+    if (!containsInnerHTML) return;
+
+    // Check that code is visible to the reader.
+    // That is, this code is not hidden inside a parent with
+    // class .hidden.
+    let node = $(element);
+    while (node && node[0] && node[0].name !== "html") {
+      //console.error(node[0].name);
+      const isHidden = node.hasClass("hidden");
+      if (isHidden) return;
+      node = node.parent();
+    }
+
+    addFlaw($(element));
+  });
+
+  if (
+    level === FLAW_LEVELS.ERROR &&
+    doc.flaws.pre_with_js_innerhtml &&
+    doc.flaws.pre_with_js_innerhtml.length
+  ) {
+    throw new Error(
+      `pre_with_js_innerhtml flaws: ${doc.flaws.pre_with_js_innerhtml.map(
+        JSON.stringify
+      )}`
     );
   }
 }
