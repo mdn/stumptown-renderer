@@ -198,3 +198,10 @@ from the file `mdn-web-docs.svg` in the repository root. This file is then
 converted to favicons using [realfavicongenerator.net](https://realfavicongenerator.net/).
 To generate new favicons, edit or replace the `mdn-web-docs.svg` file
 and then re-upload that to realfavicongenerator.net.
+
+## Contact
+
+If you want to talk to us, ask questions, and find out more, join the 
+discussion on the
+[MDN Web Docs chat room](https://chat.mozilla.org/#/room/#mdn:mozilla.org)
+on [Matrix](https://wiki.mozilla.org/Matrix).
