@@ -52,6 +52,13 @@ export interface BadPreTagFlaw extends GenericFlaw {
   type: BadPreTagType;
 }
 
+export interface NotPrettierFlaw extends GenericFlaw {
+  before: string;
+  error?: string;
+  line?: number;
+  column?: number;
+}
+
 export interface MacroErrorMessage extends GenericFlaw {
   name: string;
   error: {
@@ -76,6 +83,7 @@ type Flaws = {
   images: ImageReferenceFlaw[];
   bad_pre_tags: BadPreTagFlaw[];
   sectioning: SectioningFlaw[];
+  not_prettier: NotPrettierFlaw[];
   image_widths: ImageWidthFlaw[];
 };
 

@@ -30,6 +30,7 @@ const VALID_FLAW_CHECKS = new Set([
   "image_widths",
   "bad_pre_tags",
   "sectioning",
+  "not_prettier",
 ]);
 
 // TODO (far future): Switch to "error" when number of flaws drops.

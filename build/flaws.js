@@ -3,6 +3,7 @@ const path = require("path");
 
 const chalk = require("chalk");
 const got = require("got");
+const prettier = require("prettier");
 const FileType = require("file-type");
 const imagemin = require("imagemin");
 const imageminPngquant = require("imagemin-pngquant");
@@ -34,6 +35,13 @@ function injectFlaws(doc, $, options, { rawContent }) {
   injectBadBCDQueriesFlaws(options.flawLevels.get("bad_bcd_queries"), doc, $);
 
   injectPreTagFlaws(options.flawLevels.get("bad_pre_tags"), doc, $, rawContent);
+
+  injectNotPrettierFlaws(
+    options.flawLevels.get("not_prettier"),
+    doc,
+    $,
+    rawContent
+  );
 }
 
 function injectSectionFlaws(doc, flaws, options) {
@@ -273,14 +281,6 @@ function injectBadBCDQueriesFlaws(level, doc, $) {
 function injectPreTagFlaws(level, doc, $, rawContent) {
   if (level === FLAW_LEVELS.IGNORE) return;
 
-  function escapeHTML(s) {
-    return s
-      .replace(/&/g, "&amp;")
-      .replace(/"/g, "&quot;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
-
   // Over the years, we've accumulated a lot of Kuma-HTML where the <pre> tags
   // are actually full of HTML. Almost exclusively we've observed <pre> tags whose
   // content is the HTML produced by Prism in the browser. Instead, in these cases,
@@ -394,6 +394,113 @@ function injectPreTagFlaws(level, doc, $, rawContent) {
   ) {
     throw new Error(
       `bad_pre_tags flaws: ${doc.flaws.bad_pre_tags.map(JSON.stringify)}`
+    );
+  }
+}
+
+function escapeHTML(s) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function unescapeHTML(h) {
+  return h
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+}
+
+function injectNotPrettierFlaws(level, doc, $, rawContent) {
+  if (level === FLAW_LEVELS.IGNORE) return;
+
+  const getNextId = () => `not_prettier${doc.flaws.not_prettier.length + 1}`;
+
+  $("div.hidden pre").remove(); // XXX shouldn't need this. In some other PR.
+
+  $("pre").each((i, pre) => {
+    if ($("code", pre).length) {
+      return;
+    }
+    const $pre = $(pre);
+    const className = $pre.attr("class") || "";
+    if (className.includes("noprettier")) {
+      // Been marked to deliberately not be touched
+      return;
+    }
+    const match = className.match(/brush:?\s*([\w_-]+)/i);
+    if (!match) {
+      return;
+    }
+    const codeBefore = $pre.text();
+    let codeAfter = "";
+    let errorString = "";
+    if (match[1] === "js") {
+      try {
+        codeAfter = prettier.format(codeBefore, {
+          semi: true,
+          parser: "babel",
+        });
+      } catch (error) {
+        errorString = error.toString();
+      }
+    } else if (match[1] === "css") {
+      try {
+        codeAfter = prettier.format(codeBefore, {
+          parser: "css",
+        });
+      } catch (error) {
+        errorString = error.toString();
+      }
+    }
+    if ((codeAfter && codeBefore.trim() !== codeAfter.trim()) || errorString) {
+      if (!("not_prettier" in doc.flaws)) {
+        doc.flaws.not_prettier = [];
+      }
+      const id = getNextId();
+      const flaw = {
+        id,
+        fixable: false,
+        before: codeBefore,
+      };
+      for (const { line, column } of findMatchesInText(
+        codeBefore,
+        unescapeHTML(rawContent)
+      )) {
+        flaw.line = line;
+        flaw.column = column;
+        flaw.fixable = true;
+      }
+
+      if (errorString) {
+        flaw.explanation = "Can't even be formatted with Prettier";
+        flaw.error = errorString;
+      } else {
+        // We have a flaw with some hope of fixing!
+        (flaw.explanation = "Prettier would like to disagree"),
+          (flaw.suggestion = codeAfter);
+        if (flaw.line && flaw.column) {
+          flaw.fixable = true;
+        }
+
+        // But always update it
+        $pre.text(codeAfter);
+      }
+      doc.flaws.not_prettier.push(flaw);
+      $pre.attr("data-flaw", id);
+    }
+  });
+
+  if (
+    level === FLAW_LEVELS.ERROR &&
+    doc.flaws.not_prettier &&
+    doc.flaws.not_prettier.length
+  ) {
+    throw new Error(
+      `not_prettier flaws: ${doc.flaws.not_prettier.map(JSON.stringify)}`
     );
   }
 }
