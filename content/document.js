@@ -361,14 +361,12 @@ function findAll(
   const filePaths = [];
   const roots = [];
   if (CONTENT_ARCHIVED_ROOT) {
-    // roots.push({ path: CONTENT_ARCHIVED_ROOT, isArchive: true });
     roots.push(CONTENT_ARCHIVED_ROOT);
   }
   if (CONTENT_TRANSLATED_ROOT) {
     roots.push(CONTENT_TRANSLATED_ROOT);
   }
   roots.push(CONTENT_ROOT);
-  console.log("Building roots:", roots);
   for (const root of roots) {
     filePaths.push(
       ...glob

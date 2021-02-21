@@ -82,6 +82,20 @@ function gather(contentRoot, previousFile = null) {
   return map;
 }
 
+function getRecentGitFiles(contentRoot, hours) {
+  const files = [];
+  const now = new Date();
+  for (const [key, value] of gather(contentRoot)) {
+    const { modified } = value;
+    const ageHours = (now.getTime() - modified.getTime()) / 1000 / 3600;
+    if (ageHours < hours) {
+      files.push(key);
+    }
+  }
+  return files;
+}
+
 module.exports = {
   gather,
+  getRecentGitFiles,
 };

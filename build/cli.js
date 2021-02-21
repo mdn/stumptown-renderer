@@ -15,6 +15,7 @@ const { buildDocument, renderContributorsTxt } = require("./index");
 const SearchIndex = require("./search-index");
 const {
   BUILD_OUT_ROOT,
+  GIT_RECENT_HOURS,
   HOMEPAGE_FEED_URL,
   HOMEPAGE_FEED_DISPLAY_MAX,
 } = require("./constants");
@@ -22,9 +23,11 @@ const { makeSitemapXML, makeSitemapIndexXML } = require("./sitemaps");
 const {
   CONTENT_TRANSLATED_ROOT,
   CONTENT_ROOT,
+  CONTENT_ARCHIVED_ROOT,
 } = require("../content/constants");
 const { uniqifyTranslationsOf } = require("./translationsof");
 const { humanFileSize } = require("./utils");
+const { getRecentGitFiles } = require("./git-history");
 const { getFeedEntries } = require("./feedparser");
 
 async function buildDocumentInteractive(
@@ -144,6 +147,31 @@ async function buildDocuments(
 
   // This builds up a mapping from en-US slugs to their translated slugs.
   const translationsOf = new Map();
+
+  if (files && CONTENT_TRANSLATED_ROOT && !interactive) {
+    // Normally, when `files` is set, it won't scan all translated content
+    // to build up a complete(ish) map of all translations to each other.
+    // But if specific files are only considered it won't get the chance,
+    // so we have to manually prepare it.
+    // XXX NOTE This will become a LOT simpler once all translated content
+    // has no slugs of their own any more.
+    const allDocuments = Document.findAll();
+    for (const document of allDocuments.iter()) {
+      if (!document.isTranslated) {
+        continue;
+      }
+      const { translation_of, locale, title } = document.metadata;
+      if (!translation_of) continue; // junk
+      if (!translationsOf.has(translation_of)) {
+        translationsOf.set(translation_of, []);
+      }
+      translationsOf.get(translation_of).push({
+        url: document.url,
+        locale,
+        title,
+      });
+    }
+  }
 
   if (!options.noProgressbar) {
     progressBar.start(documents.count);
@@ -397,6 +425,26 @@ program
   .option("-i, --interactive", "Ask what to do when encountering flaws", {
     default: false,
   })
+  .option(
+    "-g, --git-recent-hours",
+    "Use the git history to find specific files changed in the last X hours",
+    {
+      default: GIT_RECENT_HOURS,
+      validator: (value) => {
+        if (value === null) {
+          return null;
+        }
+        const hours = parseInt(value);
+        if (isNaN(hours)) {
+          throw new Error(`'${value}' is not a number`);
+        }
+        if (hours < 1) {
+          throw new Error("Minimum is 1 hour");
+        }
+        return hours;
+      },
+    }
+  )
   .argument("[files...]", "specific files to build")
   .action(async ({ args, options }) => {
     try {
@@ -410,13 +458,32 @@ program
         return;
       }
 
-      if (!options.quiet) {
-        console.log("\nBuilding Documents...");
+      if (!options.quiet && !options.gitRecentHours) {
+        console.log("\nBuilding Documents from...");
+        console.log(CONTENT_ROOT);
+        if (CONTENT_TRANSLATED_ROOT) {
+          console.log(CONTENT_TRANSLATED_ROOT);
+        }
+        if (CONTENT_ARCHIVED_ROOT) {
+          console.log(CONTENT_ARCHIVED_ROOT);
+        }
       }
+      const gitFiles = options.gitRecentHours
+        ? getRecentGitFiles(CONTENT_ROOT, options.gitRecentHours)
+        : null;
+      if (gitFiles) {
+        if (gitFiles.length) {
+          console.log(`Found ${gitFiles.length} recently modified in git!`);
+        } else {
+          console.log("Nothing recently modified in git");
+          return;
+        }
+      }
+
       const { files } = args;
       const t0 = new Date();
       const { slugPerLocale, peakHeapBytes, totalFlaws } = await buildDocuments(
-        files,
+        gitFiles || files,
         Boolean(options.quiet),
         Boolean(options.interactive)
       );

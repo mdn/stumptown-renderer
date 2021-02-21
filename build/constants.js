@@ -7,6 +7,8 @@ require("dotenv").config({
 const BUILD_OUT_ROOT =
   process.env.BUILD_OUT_ROOT || path.join(__dirname, "..", "client", "build");
 
+const GIT_RECENT_HOURS = JSON.parse(process.env.BUILD_GIT_RECENT_HOURS || null);
+
 const FLAW_LEVELS = Object.freeze({
   ERROR: "error",
   IGNORE: "ignore",
@@ -71,6 +73,7 @@ const HOMEPAGE_FEED_DISPLAY_MAX = JSON.parse(
 
 module.exports = {
   BUILD_OUT_ROOT,
+  GIT_RECENT_HOURS,
   DEFAULT_FLAW_LEVELS,
   FILES,
   FLAW_LEVELS,
