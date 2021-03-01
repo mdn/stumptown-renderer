@@ -3,11 +3,10 @@ import { useParams } from "react-router";
 import { useDebouncedCallback } from "use-debounce";
 
 import "./form.scss";
-import useSWR from "swr";
 
 type DocumentFormData = {
   rawHTML: string;
-  metadata: { slug: string; title: string };
+  metadata: { title: string; slug: string };
 };
 
 // Same as DocumentFormData but metadata also includes the locale
@@ -17,126 +16,66 @@ export type DocumentOutData = DocumentFormData & {
 
 export function DocumentForm({
   onSave,
-  initialSlug,
   doc,
   isSaving,
   savingError,
 }: {
-  onSave: (doc: DocumentOutData, didSlugChange: boolean) => unknown;
-  initialSlug?: string | null;
-  doc?: DocumentFormData;
+  onSave: (doc: DocumentOutData) => unknown;
+  doc: DocumentFormData;
   isSaving?: boolean;
   savingError?: null | Error;
 }) {
   const { locale } = useParams();
 
-  const [slug, setSlug] = useState(
-    initialSlug ? initialSlug + "/" : doc ? doc.metadata.slug : ""
-  );
-  const [title, setTitle] = useState(doc ? doc.metadata.title : "");
-  const [rawHTML, setRawHtml] = useState(doc ? doc.rawHTML : "");
+  const [revisions, setRevisions] = React.useState<DocumentOutData[]>([]);
 
-  const [autosaveEnabled, setAutoSaveEnabled] = useLocalStorage(
-    "autosaveEdit",
-    false
-  );
-
-  const { data: slugExists } = useSWR(
-    `exists:${slug}`,
-    async () =>
-      (
-        await fetch(
-          `/_document?${new URLSearchParams({
-            url: `/${locale}/docs/${slug}`,
-          }).toString()}`
-        )
-      ).ok
-  );
-
-  const isNew = !doc;
-
-  // New documents should not autosave
-  const canAutosave = !isNew && autosaveEnabled;
-
-  const didSlugChange = Boolean(doc && doc.metadata.slug !== slug);
-
-  const willAutosave = canAutosave && !didSlugChange;
-
-  // In auto-save mode inputs should still be changeable during saving
-  const disableInputs = !willAutosave && isSaving;
-
-  const invalidSlug = slug.endsWith("/");
-
-  function toggleAutoSave() {
-    setAutoSaveEnabled(!autosaveEnabled);
-  }
-
-  const { callback: debounceCallback } = useDebouncedCallback(onSave, 1000);
-
-  useEffect(() => {
-    if (willAutosave) {
-      debounceCallback(
-        {
-          rawHTML,
-          metadata: { slug, title, locale },
-        },
-        didSlugChange
+  async function onSaveWrapper(doc: DocumentOutData) {
+    await onSave(doc);
+    console.log("AFTER SAVE", doc);
+    function isDifferentDoc(previousDoc: DocumentOutData): boolean {
+      return (
+        previousDoc.rawHTML !== doc.rawHTML ||
+        previousDoc.metadata.title !== doc.metadata.title
       );
     }
-  }, [
-    willAutosave,
-    debounceCallback,
-    slug,
-    title,
-    rawHTML,
-    didSlugChange,
-    locale,
-  ]);
+    if (!revisions.length || isDifferentDoc(revisions[revisions.length - 1])) {
+      setRevisions([...revisions, Object.assign({}, doc)]);
+    }
+  }
+
+  const [title, setTitle] = useState(doc.metadata.title);
+  const [rawHTML, setRawHtml] = useState(doc.rawHTML);
+
+  const autosaveEnabled = true;
+
+  // In auto-save mode inputs should still be changeable during saving
+  const disableInputs = !autosaveEnabled && isSaving;
+
+  const { callback: debounceCallback } = useDebouncedCallback(
+    onSaveWrapper,
+    600
+  );
+
+  useEffect(() => {
+    if (autosaveEnabled) {
+      debounceCallback({
+        rawHTML,
+        metadata: { title, locale, slug: doc.metadata.slug },
+      });
+    }
+  }, [autosaveEnabled, debounceCallback, title, rawHTML, locale]);
 
   return (
     <form
       className="document-form"
       onSubmit={(event) => {
         event.preventDefault();
-        onSave(
-          {
-            rawHTML,
-            metadata: { slug, title, locale },
-          },
-          didSlugChange
-        );
+        onSaveWrapper({
+          rawHTML,
+          metadata: { title, locale, slug: doc.metadata.slug },
+        });
       }}
     >
-      <div>
-        <label>
-          Slug
-          <input
-            disabled={!isNew}
-            type="text"
-            value={slug}
-            onChange={(event) => setSlug(event.target.value)}
-            style={{ width: "100%" }}
-          />
-        </label>
-        {slugExists && !(doc && doc.metadata.slug === slug) && (
-          <div className="form-warning">
-            Warning! This slug already exists, creating this document will
-            override the other document using that slug.
-          </div>
-        )}
-        {invalidSlug && (
-          <div className="form-warning">
-            Slugs are not allowed to end in a slash
-          </div>
-        )}
-      </div>
-
-      {didSlugChange && canAutosave && (
-        <div>
-          Autosave has been temporarily disabled until the new slug is saved!
-        </div>
-      )}
-
       <p>
         <label>
           Title
@@ -154,34 +93,18 @@ export function DocumentForm({
         disabled={disableInputs}
         value={rawHTML}
         onChange={(event) => setRawHtml(event.target.value)}
-        rows={20}
-        style={{ width: "100%" }}
+        style={{ width: "100%", minHeight: 700 }}
       />
-      <p>
-        <button
-          type="submit"
-          disabled={disableInputs || !title || !slug || invalidSlug || !rawHTML}
-        >
-          {isNew ? "Create" : "Save"}
-        </button>
-
-        {!isNew && (
-          <span className="action-options">
-            <input
-              type="checkbox"
-              id="enable_autosave"
-              checked={autosaveEnabled}
-              onChange={toggleAutoSave}
-            />
-            <label htmlFor="enable_autosave">Enable autosave</label>
-          </span>
-        )}
-      </p>
       {savingError && (
         <div className="error-message submission-error">
           <p>Error saving document</p>
           <pre>{savingError.toString()}</pre>
         </div>
+      )}
+      {revisions.length > 1 && (
+        <p>
+          {revisions.length - 1} edit{revisions.length - 1 === 1 ? "" : "s"}
+        </p>
       )}
     </form>
   );

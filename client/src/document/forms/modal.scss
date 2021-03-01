@@ -1,0 +1,67 @@
+@import "~@mdn/minimalist/sass/vars/color-palette";
+@import "~@mdn/minimalist/sass/vars/layout";
+@import "~@mdn/minimalist/sass/mixins/utils";
+
+$modal-background-color: rgba(0, 0, 0, 0.2);
+
+.modal-overlay {
+  background-color: $modal-background-color;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: $top-layer;
+
+  > * {
+    position: relative;
+  }
+
+  .edit-modal {
+    background-color: $neutral-600;
+    border-radius: $base-unit;
+    min-width: 40vw;
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    height: 90%;
+  }
+
+  .close-modal {
+    background: none;
+    border: 0;
+    position: absolute;
+    right: -17px;
+    top: -12px;
+
+    span {
+      @include visually-hidden();
+    }
+
+    &::before {
+      background: transparent url("~@mdn/dinocons/general/close-modal.svg") 0 0
+        no-repeat;
+      background-size: 24px;
+      content: "";
+      display: block;
+      height: 24px;
+      width: 24px;
+    }
+  }
+}
+
+@supports (display: flex) {
+  .modal-overlay {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    > * {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-bottom: $base-spacing;
+    }
+  }
+}

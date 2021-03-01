@@ -128,6 +128,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-is": "^17.0.1",
+    "react-modal": "3.12.1",
     "react-router": "6.0.0-beta.0",
     "react-router-dom": "6.0.0-beta.0",
     "react-scripts": "4.0.3",

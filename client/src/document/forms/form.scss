@@ -5,6 +5,11 @@
   input {
     font-family: monospace;
   }
+  .action-options {
+    label {
+      display: inline;
+    }
+  }
 
   .form-warning {
     font-weight: bold;

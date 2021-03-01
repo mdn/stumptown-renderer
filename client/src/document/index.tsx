@@ -71,6 +71,15 @@ export function Document(props /* TODO: define a TS interface for this */) {
   );
 
   React.useEffect(() => {
+    // This prop changing makes it possible for some other component, that
+    // wraps <Document> to keep mounting it with a different value each time
+    // effectively triggering a reload.
+    if (props.updated) {
+      mutate(dataURL);
+    }
+  }, [props.updated, dataURL]);
+
+  React.useEffect(() => {
     if (!doc && !error) {
       document.title = "⏳ Loading…";
     } else if (error) {
@@ -174,7 +183,9 @@ export function Document(props /* TODO: define a TS interface for this */) {
       </div>
 
       <div className="page-content-container">
-        {doc.toc && !!doc.toc.length && <TOC toc={doc.toc} />}
+        {doc.toc && !!doc.toc.length && !props.isPreview && (
+          <TOC toc={doc.toc} />
+        )}
 
         <MainContentContainer>
           <article className="article" lang={doc.locale}>
@@ -182,9 +193,9 @@ export function Document(props /* TODO: define a TS interface for this */) {
           </article>
         </MainContentContainer>
 
-        {doc.sidebarHTML && <RenderSideBar doc={doc} />}
+        {doc.sidebarHTML && !props.isPreview && <RenderSideBar doc={doc} />}
       </div>
-      <Metadata doc={doc} locale={locale} />
+      {!props.isPreview && <Metadata doc={doc} locale={locale} />}
     </>
   );
 }

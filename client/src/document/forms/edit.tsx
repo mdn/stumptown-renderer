@@ -1,14 +1,19 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import useSWR from "swr";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import useSWR, { mutate } from "swr";
+import Modal from "react-modal";
+
 import { Document } from "../index";
 import { useDocumentURL } from "../hooks";
 import { DocumentForm, DocumentOutData } from "./form";
 
 import "./edit.scss";
+import "./modal.scss";
+
+Modal.setAppElement("#root");
 
 export default function DocumentEdit() {
-  const location = useLocation();
+  const navigate = useNavigate();
   const documentURL = useDocumentURL();
   const fetchURL = `/_document?${new URLSearchParams({
     url: documentURL,
@@ -21,9 +26,10 @@ export default function DocumentEdit() {
     return await response.json();
   });
 
-  const [isSaving, setIsSaving] = useState(false);
-  const [savingError, setSavingError] = useState<Error | null>(null);
-  async function handleSave(data: DocumentOutData, didSlugChange: boolean) {
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [savingError, setSavingError] = React.useState<Error | null>(null);
+  const [updated, setUpdated] = React.useState<Date | null>(null);
+  async function handleSave(data: DocumentOutData) {
     setIsSaving(true);
     try {
       const response = await fetch(
@@ -38,45 +44,73 @@ export default function DocumentEdit() {
         setSavingError(new Error(`${response.status} on ${response.url}`));
         return;
       }
-      if (didSlugChange) {
-        // Hack! We do a full-page transition so that the search index refreshes itself
-        window.location.href =
-          location.pathname.split("_edit")[0] + "_edit/" + data.metadata.slug;
-      }
+      mutate(fetchURL);
+      setUpdated(new Date());
     } catch (err) {
       setSavingError(err);
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   }
 
-  return (
-    <main className="page-content-container document-edit" role="main">
-      <h2 className="edit-header">
-        Edit view
-        <Link to={documentURL} className="close">
-          close
-        </Link>
-      </h2>
+  React.useEffect(() => {
+    function escapeMaybe(event) {
+      if (event.code === "Escape") {
+        // Unless you're in the middle of an input, redirect out.
+        if (
+          !(
+            event.target &&
+            (event.target.tagName === "INPUT" ||
+              event.target.tagName === "TEXTAREA")
+          )
+        ) {
+          navigate(documentURL);
+        }
+      }
+    }
+    document.addEventListener("keyup", escapeMaybe);
+    return () => {
+      document.removeEventListener("keyup", escapeMaybe);
+    };
+  }, [documentURL, navigate]);
 
-      {!data && !error && <p>Loading source data...</p>}
-      {error && (
-        <div className="attention">
-          <h3>Error loading source</h3>
-          <code>{error.toString()}</code>
-        </div>
-      )}
-      <div className="document-edit-forms">
-        {data && (
-          <DocumentForm
-            doc={data}
-            {...{ isSaving, savingError }}
-            onSave={handleSave}
-          />
+  return (
+    <>
+      <Modal
+        isOpen={true}
+        overlayClassName="modal-overlay"
+        className="edit-modal"
+      >
+        <button
+          id="close-modal"
+          className="close-modal"
+          onClick={() => {
+            navigate(documentURL);
+          }}
+        >
+          <span>Close modal</span>
+        </button>
+
+        {!data && !error && <p>Loading source data...</p>}
+        {error && (
+          <div className="attention">
+            <h3>Error loading source</h3>
+            <code>{error.toString()}</code>
+          </div>
         )}
-      </div>
-      <div className="document-preview">
-        <Document isPreview={true} />
-      </div>
-    </main>
+
+        <div className="document-edit-forms">
+          {data && (
+            <DocumentForm
+              doc={data}
+              {...{ isSaving, savingError }}
+              onSave={handleSave}
+            />
+          )}
+        </div>
+      </Modal>
+
+      <Document isPreview={true} updated={updated} />
+    </>
   );
 }

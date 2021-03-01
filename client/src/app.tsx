@@ -18,7 +18,6 @@ import { Banner } from "./banners";
 
 const AllFlaws = React.lazy(() => import("./flaws"));
 const DocumentEdit = React.lazy(() => import("./document/forms/edit"));
-const DocumentCreate = React.lazy(() => import("./document/forms/create"));
 const DocumentManage = React.lazy(() => import("./document/forms/manage"));
 const WritersHomepage = React.lazy(() => import("./writers-homepage"));
 
@@ -125,23 +124,15 @@ export function App(appProps) {
                 <Route
                   path="/_edit/*"
                   element={
-                    <StandardLayout>
+                    <DocumentLayout>
                       <DocumentEdit />
-                    </StandardLayout>
+                    </DocumentLayout>
                   }
                 />
 
                 {/* The following two are not "enabled". I.e. no link to them.
                     See https://github.com/mdn/yari/issues/1614
                  */}
-                <Route
-                  path="/_create/*"
-                  element={
-                    <StandardLayout>
-                      <DocumentCreate />
-                    </StandardLayout>
-                  }
-                />
                 <Route
                   path="/_manage/*"
                   element={

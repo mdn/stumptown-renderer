@@ -9,15 +9,11 @@
       margin-left: $base-spacing;
     }
   }
-
-  display: grid;
-  grid-template-columns: 1fr 1fr;
 }
 
 .document-edit-forms {
-  margin: 1em;
-  grid-row: 2/3;
-  grid-column: 1/2;
+  padding: $base-spacing;
+  width: 100%;
 }
 
 .document-preview {
@@ -26,4 +22,14 @@
   grid-column: 2/3;
   max-height: 90vh;
   overflow-y: scroll;
+}
+
+.document-page {
+  .page-content-container {
+    grid-template-columns: 75% 25%;
+
+    .main-content {
+      grid-column: 1/2;
+    }
+  }
 }
