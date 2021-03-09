@@ -413,15 +413,22 @@ program
         historyPerLocale[locale][relPath] = value;
       }
       for (const [locale, history] of Object.entries(historyPerLocale)) {
-        const outputFile = path.join(root, locale, "_githistory.json");
-        fs.writeFileSync(outputFile, JSON.stringify(history, null, 2), "utf-8");
-        console.log(
-          chalk.green(
-            `Wrote '${locale}' ${Object.keys(
-              history
-            ).length.toLocaleString()} paths into ${outputFile}`
-          )
-        );
+        const outputFileDir = path.resolve(path.join(root, locale), "..");
+        const outputFile = path.join(outputFileDir, "_githistory.json");
+        if (fs.existsSync(outputFileDir)) {
+          fs.writeFileSync(
+            outputFile,
+            JSON.stringify(history, null, 2),
+            "utf-8"
+          );
+          console.log(
+            chalk.green(
+              `Wrote '${locale}' ${Object.keys(
+                history
+              ).length.toLocaleString()} paths into ${outputFile}`
+            )
+          );
+        }
       }
       if (saveHistory) {
         fs.writeFileSync(
