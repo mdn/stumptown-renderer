@@ -1,7 +1,7 @@
 name: Performance
 
 on:
-  pull_request:
+  pull_request_target:
     paths:
       - client/src/**
       - .github/workflows/performance.yml
@@ -14,10 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          # Needed because of
-          # https://github.com/GoogleChrome/lighthouse-ci/issues/172
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - uses: actions/checkout@v2
         with:
@@ -58,28 +54,75 @@ jobs:
           # BUILD_FOLDERSEARCH=mdn/kitchensink yarn build
           BUILD_FOLDERSEARCH=web/javascript/reference/global_objects/array/foreach yarn build
 
-      - name: Serve and lhci
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+      - name: Serve sample built page
         run: |
           yarn start:static-server &
           sleep 1
           curl --retry-connrefused --retry 5 \
             http://localhost:5000/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach/ > /dev/null
 
-          npm install -g @lhci/cli@next
+      - name: Audit URLs using Lighthouse
+        id: lighthouse_audit
+        uses: treosh/lighthouse-ci-action@v7
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        with:
+          urls: |
+            http://localhost:5000/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach/
+          # budgetPath: ./budget.json # test performance budgets
+          runs: 1
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse report to the temporary storage
 
-          # Note, we can supply multiple `--collect.url=...` to have lhci test
-          # a variety of URLs and then assume a average (or median?) across them.
+      - name: Format lighthouse score
+        id: format_lighthouse_score
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const result = ${{ steps.lighthouse_audit.outputs.manifest }}[0].summary
+            const links = ${{ steps.lighthouse_audit.outputs.links }}
+            const formatResult = (res) => Math.round((res * 100))
+            Object.keys(result).forEach(key => result[key] = formatResult(result[key]))
+            const score = res => res >= 90 ? '🟢' : res >= 50 ? '🟠' : '🔴'
+            const comment = [
+                `⚡️ [Lighthouse report](${Object.values(links)[0]}) for the changes in this PR:`,
+                '| Category | Score |',
+                '| --- | --- |',
+                `| ${score(result.performance)} Performance | ${result.performance} |`,
+                `| ${score(result.accessibility)} Accessibility | ${result.accessibility} |`,
+                `| ${score(result['best-practices'])} Best practices | ${result['best-practices']} |`,
+                `| ${score(result.seo)} SEO | ${result.seo} |`,
+                `| ${score(result.pwa)} PWA | ${result.pwa} |`,
+                ' ',
+                `*Lighthouse ran on <${Object.keys(links)[0]}>*`
+            ].join('\n')
+             core.setOutput("comment", comment);
 
-          # All options for "collect" here:
-          # https://github.com/GoogleChrome/lighthouse-ci/blob/master/docs/configuration.md#collect
+      - name: Add Lighthouse stats as comment
+        id: comment_to_pr
+        uses: marocchino/sticky-pull-request-comment@v2.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          header: lighthouse
+          message: ${{ steps.format_lighthouse_score.outputs.comment }}
 
-          lhci autorun \
-            --upload.target=temporary-public-storage \
-            --collect.url="http://localhost:5000/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach/"
+      - name: Format static assets file sizes
+        id: format_static_assets
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('./testing/scripts/static-assets-sizes.js')
+            const comment = script({github, context})
+            core.setOutput("comment", comment);
 
-          # TODO (as of Oct 2020)
-          # Once our Lighthouse score starts to not be so terrible, we can start
-          # adding assertions here.
-          # See https://github.com/GoogleChrome/lighthouse-ci/blob/master/docs/configuration.md#categories
+      - name: Add static assets stats as comment
+        id: comment_to_pr2
+        uses: marocchino/sticky-pull-request-comment@v2.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
+          header: static assets
+          message: ${{ steps.format_static_assets.outputs.comment }}
