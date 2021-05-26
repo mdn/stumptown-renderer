@@ -8,6 +8,8 @@ import { PLATFORM_BROWSERS, Headers } from "./headers";
 import { Legend } from "./legend";
 import { listFeatures } from "./utils";
 
+import "./index.scss";
+
 // Note! Don't import any SCSS here inside *this* component.
 // It's done in the component that lazy-loads this component.
 
