@@ -17,6 +17,7 @@ server/node_modules/
 /content/files/en-us/
 
 /deployer
+/traits
 kumascript/tests
 testing/
 import/

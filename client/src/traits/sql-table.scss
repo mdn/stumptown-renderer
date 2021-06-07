@@ -1,0 +1,80 @@
+.sql-table {
+  padding-bottom: 50px;
+
+  div.help {
+    pre {
+      margin-bottom: 4px;
+    }
+    div button {
+      margin-bottom: 25px;
+    }
+  }
+
+  form.query {
+    .query-buttons {
+      margin-top: 10px;
+    }
+    textarea {
+      font-family: monospace;
+      background-color: green;
+      width: 99%;
+      border: 1px solid black;
+    }
+    textarea.has-sql-error {
+      border: 1px solid rgb(255, 148, 148);
+    }
+    .sql-error {
+      background-color: rgb(255, 148, 148);
+      border-radius: 2px;
+      margin-bottom: 10px;
+    }
+  }
+
+  .query-statement-warnings {
+    background-color: rgb(255, 226, 226);
+    p {
+      margin-bottom: 0;
+    }
+    ul {
+      margin: 2px;
+    }
+  }
+  .share-url {
+    a {
+      font-size: 80%;
+      font-family: monospace;
+      line-height: 1.5;
+    }
+  }
+  .query-error {
+    background-color: rgb(255, 148, 148);
+  }
+  .too-many-to-display {
+    background-color: rgb(232, 147, 116);
+    padding: 10px 20px;
+    p {
+      margin: 0;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  .no-results {
+    margin: 40px;
+  }
+  .results {
+    margin-top: 10px;
+    margin-bottom: 40px;
+
+    .results-count {
+      font-size: 120%;
+    }
+  }
+
+  table {
+    thead th {
+      font-weight: bold;
+      padding-right: 5px;
+    }
+  }
+}

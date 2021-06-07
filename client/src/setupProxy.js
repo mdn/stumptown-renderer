@@ -7,7 +7,7 @@ module.exports = function (app) {
     changeOrigin: true,
   });
   app.use("/api", proxy);
-  app.use("/_+(flaws|translations|open|document)", proxy);
+  app.use("/_+(flaws|translations|open|document|traits)", proxy);
   // E.g. search-index.json or index.json
   app.use("**/*.json", proxy);
   // This has to match what we do in server/index.js in the catchall handler

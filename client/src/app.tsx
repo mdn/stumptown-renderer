@@ -21,6 +21,7 @@ import { Settings } from "./settings";
 import { Plus } from "./plus";
 
 const AllFlaws = React.lazy(() => import("./flaws"));
+const AllTraits = React.lazy(() => import("./traits"));
 const AllTranslations = React.lazy(() => import("./translations"));
 const DocumentEdit = React.lazy(() => import("./document/forms/edit"));
 const DocumentCreate = React.lazy(() => import("./document/forms/create"));
@@ -145,6 +146,14 @@ export function App(appProps) {
                   element={
                     <StandardLayout>
                       <AllTranslations />
+                    </StandardLayout>
+                  }
+                />
+                <Route
+                  path="/_traits/*"
+                  element={
+                    <StandardLayout>
+                      <AllTraits />
                     </StandardLayout>
                   }
                 />

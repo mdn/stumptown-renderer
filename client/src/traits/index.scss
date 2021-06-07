@@ -1,0 +1,62 @@
+button.button-inline-small {
+  display: inline;
+  margin-right: 2px;
+  white-space: nowrap;
+  padding: 2px 4px;
+  font-weight: normal;
+  min-height: 30px;
+}
+button:disabled {
+  opacity: 0.6;
+}
+
+.all-traits {
+  .sub-nav {
+    margin: 100px;
+    li {
+      margin: 20px;
+    }
+  }
+  .loading {
+    text-align: center;
+    margin: 200px;
+
+    progress {
+      width: 600px;
+      height: 30px;
+      border-radius: 2px;
+    }
+  }
+
+  .all-macros-used {
+    th.filter {
+      min-width: 350px;
+      .filter-macros {
+        text-align: right;
+      }
+    }
+
+    td.mdn_url {
+      font-size: 80%;
+      text-align: right;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+    td.count,
+    th.macro {
+      max-width: 22px;
+      font-size: 90%;
+    }
+    td.count {
+      span.zero {
+        color: #a4a4a4;
+      }
+    }
+    th.macro {
+      text-align: center;
+      transform-origin: left;
+      transform: rotate(-90deg);
+      vertical-align: bottom;
+    }
+  }
+}
