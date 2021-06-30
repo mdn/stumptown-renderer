@@ -20,7 +20,7 @@ let replacePlaceholders = mdn.replacePlaceholders;
 let localWiki = wiki;
 let currentPage = page;
 
-let cssLocalStrings = JSON.parse(await template("L10n:CSS"));
+let cssLocalStrings = web.getJSONData("L10n-CSS");
 let localStrings = require('mdn-data/l10n/css');
 
 /*

@@ -22,7 +22,7 @@ var title;
 var result;
 var lang = env.locale;
 
-var specList = JSON.parse(await template('SpecData'));
+var specList = web.getJSONData("SpecData");
 
 // Some APIs share specifications. Here we attend to that.
 

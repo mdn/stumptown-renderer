@@ -112,6 +112,10 @@ async function buildSPAs(options) {
       continue;
     }
     for (const locale of fs.readdirSync(root)) {
+      if (locale === "jsondata") {
+        // This is actually not a locale but it's located next to the locales.
+        continue;
+      }
       if (!fs.statSync(path.join(root, locale)).isDirectory()) {
         continue;
       }

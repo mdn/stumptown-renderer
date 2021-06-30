@@ -14,9 +14,9 @@ var htmlEscape = kuma.htmlEscape;
 // slug is not available in preview mode.
 if (slug && group) {
 
-var webAPIGroups = JSON.parse(await template("GroupData"));
+var webAPIGroups = web.getJSONData("GroupData");
 
-var commonl10n = JSON.parse(await template('L10n:Common'));
+var commonl10n = web.getJSONData("L10n-Common");
 
 var text = {
     'Methods': mdn.getLocalString(commonl10n, 'Methods'),

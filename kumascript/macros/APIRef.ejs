@@ -28,12 +28,12 @@ var hasTag = page.hasTag;
 var htmlEscape = kuma.htmlEscape;
 var rtlLocales = ['ar', 'he', 'fa'];
 
-var webAPIData = JSON.parse(await template("InterfaceData"));
+var webAPIData = web.getJSONData("InterfaceData");
 if (group) {
-  var webAPIGroups = JSON.parse(await template("GroupData"));
+  var webAPIGroups = web.getJSONData("GroupData");
 }
 
-var commonl10n = JSON.parse(await template('L10n:Common'));
+var commonl10n = web.getJSONData("L10n-Common");
 
 var text = {
     'Methods': mdn.getLocalString(commonl10n, 'Methods'),

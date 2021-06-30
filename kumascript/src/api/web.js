@@ -1,11 +1,14 @@
 /**
  * @prettier
  */
+const fs = require("fs");
+const path = require("path");
+
 const util = require("./util.js");
-const Templates = require("../templates.js");
 
 const DUMMY_BASE_URL = "https://example.com";
-const L10N_COMMON_STRINGS = new Templates().getLocalizedCommonStrings();
+
+const { CONTENT_ROOT } = require("../../../content");
 
 const _warned = new Map();
 // The purpose of this function is to make sure `console.warn` is only called once
@@ -159,8 +162,9 @@ module.exports = {
       flawAttribute = ` data-flaw-src="${util.htmlEscape(flaw.macroSource)}"`;
     }
     // Let's get a potentially localized title for when the document is missing.
+    fs.appendFileSync("/tmp/reads.log", `titleWhenMissing\n`, "utf-8");
     const titleWhenMissing = this.mdn.getLocalString(
-      L10N_COMMON_STRINGS,
+      this.web.getJSONData("L10n-Common"),
       "summary"
     );
     return `<a class="page-not-created" title="${titleWhenMissing}"${flawAttribute}>${content}</a>`;
@@ -179,4 +183,27 @@ module.exports = {
   // Remove unsafe characters, and collapse whitespace gaps into
   // underscores.
   slugify: util.slugify,
+
+  // Return specific .json files from the content root
+  getJSONData(name) {
+    const filePath = path.join(CONTENT_ROOT, "jsondata", `${name}.json`);
+    try {
+      return readJSONDataFile(filePath);
+    } catch (error) {
+      console.error(`Tried to read JSON from ${filePath}`, error);
+      throw error;
+    }
+  },
 };
+
+const _readJSONDataCache = new Map();
+function readJSONDataFile(filePath) {
+  if (_readJSONDataCache.has(filePath)) {
+    return _readJSONDataCache.get(filePath);
+  }
+  const payload = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  if (process.env.NODE_ENV === "production") {
+    _readJSONDataCache.set(filePath, payload);
+  }
+  return payload;
+}

@@ -15,7 +15,7 @@ let spacesToUnderscores = web.spacesToUnderscores;
 
 // Get the GroupData database
 
-let groupData = JSON.parse(await template('GroupData'))[0];
+let groupData = web.getJSONData("GroupData")[0];
 let groupNames = Object.keys(groupData);
 groupNames.sort();
 

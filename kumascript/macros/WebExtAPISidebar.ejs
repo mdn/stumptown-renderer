@@ -11,7 +11,7 @@ var baseAPIPage = baseURL + "Mozilla/Add-ons/WebExtensions/API";
 var htmlEscape = kuma.htmlEscape;
 var rtlLocales = ['ar', 'he', 'fa'];
 
-let commonl10n = JSON.parse(await template('L10n:Common'));
+let commonl10n = web.getJSONData('L10n-Common');
 
 let text = {
     'translate': mdn.getLocalString(commonl10n, '[Translate]'),

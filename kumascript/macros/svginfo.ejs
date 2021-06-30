@@ -8,10 +8,10 @@
 var slug = env.slug;
 var name = $0 || (slug ? slug.split("/").pop() :
     "preview-wiki-content");
-var data = JSON.parse(await template("SVGData"));
+var data = web.getJSONData("SVGData");
 var formattedError = "<span style=\"color:red;\">$1$</span>";
-var commonLocalStrings = JSON.parse(await template("L10n:Common"));
-var localStrings = JSON.parse(await template("L10n:SVG"));
+var commonLocalStrings = web.getJSONData("L10n-Common");
+var localStrings = web.getJSONData("L10n-SVG");
 
 var localize = mdn.getLocalString;
 var replacePlaceholders = mdn.replacePlaceholders;

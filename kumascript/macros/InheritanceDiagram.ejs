@@ -1,4 +1,4 @@
-<% 
+<%
 /*
   Draws an responsive SVG diagram for the inheritance chain (inverted in rtl)
 
@@ -8,7 +8,7 @@
   $3 - Interface name
 */
 
-var data = JSON.parse(await template("InterfaceData"));
+var data = web.getJSONData("InterfaceData");
 var slug = env.slug;
 var result = "";
 // slug is not available in preview mode.
@@ -62,7 +62,7 @@ function lineWithTriangle(x, y, reverse) {
   var str = '';
   if (reverse) {
     str += '<polyline points="'+x+','+(y+24)+'  '+(x-10)+','+(y+19)+'  '+(x-10)+','+(y+29)+'  '+x+','+(y+24)+'" stroke="#D4DDE4" fill="none"/>';
-    x -= 10; 
+    x -= 10;
     str += '<line x1="'+x+'" y1="'+(y+24)+'" x2="'+(x-30)+'" y2="'+(y+24)+'" stroke="#D4DDE4"/>';
   } else {
     str += '<polyline points="'+x+','+(y+24)+'  '+(x+10)+','+(y+19)+'  '+(x+10)+','+(y+29)+'  '+x+','+(y+24)+'" stroke="#D4DDE4" fill="none"/>';

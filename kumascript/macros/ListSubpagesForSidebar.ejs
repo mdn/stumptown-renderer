@@ -37,7 +37,7 @@ var code    = !$1 ? '<code>'  : '';
 var endcode = !$1 ? '</code>' : '';
 
 // Strings
-var commonl10n = JSON.parse(await template('L10n:Common'));
+var commonl10n = web.getJSONData('L10n-Common');
 var text = {
     'translate': mdn.getLocalString(commonl10n, '[Translate]'),
     'title': mdn.getLocalString(commonl10n, 'TranslationCTA'),

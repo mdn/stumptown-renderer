@@ -87,11 +87,6 @@ class Templates {
     }
   }
 
-  getLocalizedCommonStrings() {
-    const path = this.macroNameToPath.get("l10n-common");
-    return JSON.parse(fs.readFileSync(path));
-  }
-
   async render(name, args) {
     // Normalize the macro name by converting colons to hyphens and
     // uppercase letters to lowercase.

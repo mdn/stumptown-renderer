@@ -33,9 +33,9 @@ if (slug) {
 
     // Fetch the databases
 
-    var webAPIData = JSON.parse(await template('InterfaceData'));
+    var webAPIData = web.getJSONData('InterfaceData');
 
-    var commonl10n = JSON.parse(await template('L10n:Common'));
+    var commonl10n = web.getJSONData('L10n-Common');
 
     // Strings that need translating
 

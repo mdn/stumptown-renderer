@@ -52,7 +52,7 @@ let rawSyntax = "";
 let formattedSyntax = "";
 let localize = mdn.getLocalString;
 
-let localStrings = JSON.parse(await template("L10n:CSS"));
+let localStrings = web.getJSONData("L10n-CSS");
 
 let s_where = mdn.localString({
     "en-US": "where ",
