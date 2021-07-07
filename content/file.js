@@ -2,31 +2,28 @@ const fs = require("fs");
 const path = require("path");
 
 const readChunk = require("read-chunk");
-const imageType = require("image-type");
-const isSvg = require("is-svg");
+const FileType = require("file-type");
 
-const { ROOTS, VALID_IMAGE_EXTENSIONS } = require("./constants");
+const { ROOTS, VALID_FILE_TYPES } = require("./constants");
 const { memoize, slugToFolder } = require("./utils");
 
-function isImage(filePath) {
+async function isFile(filePath) {
   if (fs.statSync(filePath).isDirectory()) {
     return false;
-  }
-  if (filePath.toLowerCase().endsWith(".svg")) {
-    return isSvg(fs.readFileSync(filePath));
   }
 
   const buffer = readChunk.sync(filePath, 0, 12);
   if (buffer.length === 0) {
     return false;
   }
-  const type = imageType(buffer);
-  if (!type) {
-    // This happens when there's no match on the "Supported file types"
-    // https://github.com/sindresorhus/image-type#supported-file-types
+  const type = await FileType.fromBuffer(buffer);
+  // If the file valid, this comes back
+  // as, for example: { ext: 'ttf', mime: 'font/ttf' }
+  if (!type || !VALID_FILE_TYPES.has(type.ext)) {
     return false;
   }
-  if (!VALID_IMAGE_EXTENSIONS.has(type.ext)) {
+  if (!VALID_FILE_TYPES.get(type.ext).includes(type.mime)) {
+    console.warn(`${filePath} (${type}) not a valid file type`);
     return false;
   }
 
@@ -40,7 +37,7 @@ function urlToFilePath(url) {
 
 const find = memoize((relativePath) => {
   return ROOTS.map((root) => path.join(root, relativePath)).find(
-    (filePath) => fs.existsSync(filePath) && isImage(filePath)
+    (filePath) => fs.existsSync(filePath) && isFile(filePath)
   );
 });
 

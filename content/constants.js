@@ -55,6 +55,23 @@ if (CONTENT_TRANSLATED_ROOT) {
   REPOSITORY_URLS[CONTENT_TRANSLATED_ROOT] = "mdn/translated-content";
 }
 
+// These are the files we can accept that are not images. The files that can
+// chec checked into the content repo(s).
+const VALID_FILE_TYPES = new Map([
+  // Explanation:
+  // Each row is [fileextension, Array of mime types]
+  ["ttf", ["font/ttf"]],
+]);
+
+const VALID_IMAGE_EXTENSIONS = new Set([
+  "png",
+  "jpeg",
+  "jpg",
+  "gif",
+  "svg",
+  "webp",
+]);
+
 module.exports = {
   CONTENT_ROOT,
   CONTENT_ARCHIVED_ROOT,
@@ -63,4 +80,6 @@ module.exports = {
   ROOTS,
   VALID_LOCALES,
   ACTIVE_LOCALES,
+  VALID_FILE_TYPES,
+  VALID_IMAGE_EXTENSIONS,
 };

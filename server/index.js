@@ -19,6 +19,7 @@ const {
   Document,
   Redirect,
   Image,
+  File,
   CONTENT_TRANSLATED_ROOT,
 } = require("../content");
 // eslint-disable-next-line node/no-missing-require
@@ -209,6 +210,20 @@ app.get("/*", async (req, res) => {
     return res
       .status(404)
       .sendFile(path.join(STATIC_ROOT, "en-us", "_spas", "404.html"));
+  }
+
+  if (/\.(ttf|woff2?)$/.test(req.path)) {
+    const filePath = File.findByURL(req.path);
+    if (filePath) {
+      // The second parameter to `send()` has to be either a full absolute
+      // path or a path that doesn't start with `../` otherwise you'd
+      // get a 403 Forbidden.
+      // See https://github.com/mdn/yari/issues/1297
+      return send(req, path.resolve(filePath)).pipe(res);
+    }
+    // If it's not a file on disk, in the content repo(s), let it try to build
+    // it as a page. For example, there could be a slug whose name is
+    // something "Web/CSS/Fonts/About_the.woff2"
   }
 
   // TODO: Would be nice to have a list of all supported file extensions

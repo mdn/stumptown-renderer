@@ -17,4 +17,7 @@ module.exports = function (app) {
   app.use("**/*.(png|webp|gif|jpe?g|svg)", proxy);
   // All those root-level images like /favicon-48x48.png
   app.use("/*.(png|webp|gif|jpe?g|svg)", proxy);
+  // This needs to match what we put into content/constants.js
+  // in the keys of the VALID_FILE_TYPES map.
+  app.use("**/*.(ttf|woff2?)", proxy);
 };

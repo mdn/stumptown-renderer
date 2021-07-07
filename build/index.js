@@ -10,6 +10,8 @@ const {
   Image,
   REPOSITORY_URLS,
   execGit,
+  VALID_FILE_TYPES,
+  VALID_IMAGE_EXTENSIONS,
 } = require("../content");
 const kumascript = require("../kumascript");
 
@@ -260,18 +262,20 @@ function makeTOC(doc) {
 }
 
 /**
- * Return an array of all images that are inside the documents source folder.
+ * Return an array of all images and files that are inside the documents source folder.
  *
  * @param {Document} document
  */
-function getAdjacentImages(documentDirectory) {
+function getAdjacentFileAttachments(documentDirectory) {
   const dirents = fs.readdirSync(documentDirectory, { withFileTypes: true });
   return dirents
     .filter((dirent) => {
       // This needs to match what we do in filecheck/checker.py
+      const extension = dirent.name.split(".").pop().toLowerCase();
       return (
         !dirent.isDirectory() &&
-        /\.(png|jpeg|jpg|gif|svg|webp)$/i.test(dirent.name)
+        (VALID_IMAGE_EXTENSIONS.has(extension) ||
+          VALID_FILE_TYPES.has(extension))
       );
     })
     .map((dirent) => path.join(documentDirectory, dirent.name));
@@ -449,9 +453,9 @@ async function buildDocument(document, documentOptions = {}) {
   // current document's folder and they might be referenced in live samples.
   // The checkImageReferences() does 2 things. Checks image *references* and
   // it returns which images it checked. But we'll need to complement any
-  // other images in the folder.
-  getAdjacentImages(path.dirname(document.fileInfo.path)).forEach((fp) =>
-    fileAttachments.add(fp)
+  // other images and files in the folder.
+  getAdjacentFileAttachments(path.dirname(document.fileInfo.path)).forEach(
+    (fp) => fileAttachments.add(fp)
   );
 
   // Check the img tags for possible flaws and possible build-time rewrites
