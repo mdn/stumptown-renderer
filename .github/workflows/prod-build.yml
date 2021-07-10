@@ -166,6 +166,11 @@ jobs:
           # This enables the Plus call-to-action banner and the Plus landing page
           REACT_APP_ENABLE_PLUS: true
 
+          # This makes the Stripe subscription button appear on the Account
+          # Settings page.
+          # Note that if this URL, once set, doesn't 200 OK, it will stop the build.
+          # BUILD_SUBSCRIPTION_CONFIG_URL: https://developer.mozilla.org/api/v1/subscriptions/config/
+
         run: |
           if [ ${{ env.BUILD_ARCHIVED_CONTENT }} == "true" ]; then
             echo "Will build mdn/archived-content too"
