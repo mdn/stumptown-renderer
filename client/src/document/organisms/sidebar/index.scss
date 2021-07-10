@@ -32,6 +32,11 @@
     margin-bottom: math.div($base-spacing, 2);
   }
 
+  li.active a {
+    font-style: italic;
+    color: rgb(33, 33, 33);
+  }
+
   a {
     hyphens: auto;
   }

@@ -30,6 +30,7 @@ const buildOptions = require("./build-options");
 const { gather: gatherGitHistory } = require("./git-history");
 const { buildSPAs } = require("./spas");
 const { renderCache: renderKumascriptCache } = require("../kumascript");
+const { getRelatedContent } = require("./related-content");
 const LANGUAGES_RAW = require("../content/languages.json");
 
 const LANGUAGES = new Map(
@@ -441,7 +442,35 @@ async function buildDocument(document, documentOptions = {}) {
   // Note that 'extractSidebar' will always return a string.
   // And if it finds a sidebar section, it gets removed from '$' too.
   // Also note, these operations mutate the `$`.
-  doc.sidebarHTML = extractSidebar($);
+  if (metadata.sidebar) {
+    doc.related_content = getRelatedContent(metadata.sidebar, doc);
+  } else if (
+    (metadata.slug === "Learn" || metadata.slug.startsWith("Learn/")) &&
+    document.rawBody.includes("{{LearnSidebar}}")
+  ) {
+    // Some pages in the 'files/*/learn/*` tree(s) don't use `{{LearnSidebar}}`.
+    // Instead they use things
+    // like `{{QuickLinksWithSubpages("/en-US/docs/Web/Security")}}`.
+    // If these pages some day decide they want the dynamic related content
+    // sidebar, they can delete that macro and add `{{LearnSidebar}}` or
+    // set the `sidebar:` key in the front-matter.
+    extractSidebar($);
+    doc.related_content = getRelatedContent("learn", doc);
+  } else if (
+    (metadata.slug === "MDN" || metadata.slug.startsWith("MDN/")) &&
+    !document.rawBody.toLowerCase().includes('id="quick_links"')
+  ) {
+    // Some pages in the 'files/*/mdn/*' tree(s) don't use `{{MDNSidebar}}`.
+    // Some have hardcoded sidebars like `<section id="Quick_links"><ol>...`.
+    // Some have neither.
+    // E.g. https://developer.mozilla.org/en-US/docs/MDN/At_ten/History_of_MDN
+    // It's worth questioning if perhaps they should all "forcibly" have
+    // to get the dynamic related-content sidebar.
+    extractSidebar($);
+    doc.related_content = getRelatedContent("mdn", doc);
+  } else {
+    doc.sidebarHTML = extractSidebar($);
+  }
 
   // Check and scrutinize any local image references
   const fileAttachments = checkImageReferences(doc, $, options, document);

@@ -189,7 +189,7 @@ export function Document(props /* TODO: define a TS interface for this */) {
         <Metadata doc={doc} locale={locale} />
       </MainContentContainer>
 
-      {doc.sidebarHTML && <RenderSideBar doc={doc} />}
+      {(doc.sidebarHTML || doc.related_content) && <RenderSideBar doc={doc} />}
     </>
   );
 }

@@ -333,15 +333,13 @@ program
         seconds > 60
           ? `${(seconds / 60).toFixed(1)} minutes`
           : `${seconds.toFixed(1)} seconds`;
-      if (!options.quiet) {
-        console.log(
-          `Built ${count.toLocaleString()} pages in ${took}, at a rate of ${(
-            count / seconds
-          ).toFixed(1)} documents per second.`
-        );
-        console.log(`Peak heap memory usage: ${humanFileSize(peakHeapBytes)}`);
-        console.log(formatTotalFlaws(totalFlaws));
-      }
+      console.log(
+        `Built ${count.toLocaleString()} pages in ${took}, at a rate of ${(
+          count / seconds
+        ).toFixed(1)} documents per second.`
+      );
+      console.log(`Peak heap memory usage: ${humanFileSize(peakHeapBytes)}`);
+      console.log(formatTotalFlaws(totalFlaws));
     } catch (error) {
       // So you get a stacktrace in the CLI output
       console.error(error);

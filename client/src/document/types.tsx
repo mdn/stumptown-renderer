@@ -120,12 +120,24 @@ export type Toc = {
   text: string;
 };
 
+export interface RelatedContent {
+  url: string;
+  title: string;
+  open?: boolean;
+  content: RelatedContent[];
+  isActive?: boolean;
+  containsActive?: boolean;
+  fallback?: string;
+  notFound?: boolean;
+}
+
 export interface Doc {
   title: string;
   locale: string;
   pageTitle: string;
   mdn_url: string;
-  sidebarHTML: string;
+  sidebarHTML?: string;
+  related_content?: RelatedContent[];
   toc: Toc[];
   body: string;
   modified: string;
