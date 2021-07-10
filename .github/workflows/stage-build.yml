@@ -136,6 +136,11 @@ jobs:
           echo "deployment_prefix: ${{ github.event.inputs.deployment_prefix || env.DEFAULT_DEPLOYMENT_PREFIX }}"
           echo "BUILD_ARCHIVED_CONTENT: ${{ env.BUILD_ARCHIVED_CONTENT }}"
 
+      - name: Fetch and load latest popularities.json
+        env:
+          CONTENT_ROOT: ${{ github.workspace }}/mdn/content/files
+        run: yarn tool popularities
+
       - name: Build everything
         env:
           # Remember, the mdn/content repo got cloned into `pwd` into a
