@@ -27,7 +27,7 @@ const NEW_ISSUE_TEMPLATE = `
 <details>
 <summary>MDN page report details</summary>
 
-* Query: \`$QUERY_ID\`
+* \`browser-compat\`: \`$BROWSER_COMPAT\`
 * MDN URL: https://developer.mozilla.org$PATHNAME
 * Report started: $DATE
 
@@ -122,7 +122,7 @@ export default function BrowserCompatibilityTable({
     const sp = new URLSearchParams();
     const body = NEW_ISSUE_TEMPLATE.replace(/\$PATHNAME/g, location.pathname)
       .replace(/\$DATE/g, new Date().toISOString())
-      .replace(/\$QUERY_ID/g, query)
+      .replace(/\$BROWSER_COMPAT/g, query)
       .trim();
     sp.set("body", body);
     sp.set("title", `${query} - <PUT TITLE HERE>`);

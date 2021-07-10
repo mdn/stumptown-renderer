@@ -82,6 +82,7 @@ MDN URL: https://developer.mozilla.org$PATHNAME
 * GitHub URL: $GITHUB_URL
 * Last commit: $LAST_COMMIT_URL
 * Document last modified: $DATE
+* \`browser-compat\`: \`$BROWSER_COMPAT\`
 
 </details>
   `.trim();
@@ -119,11 +120,16 @@ function NewIssueOnGitHubLink({ doc }: { doc: Doc }) {
   let baseURL = "https://github.com/mdn/content/issues/new";
   const sp = new URLSearchParams();
 
+  const browser_compat = () => {
+    throw new Error("I don't know how to get the front matter from here");
+  };
+
   const { folder, github_url, last_commit_url } = doc.source;
   const body = NEW_ISSUE_TEMPLATE.replace(/\$PATHNAME/g, doc.mdn_url)
     .replace(/\$FOLDER/g, folder)
     .replace(/\$GITHUB_URL/g, github_url)
     .replace(/\$LAST_COMMIT_URL/g, last_commit_url)
+    .replace(/\$BROWSER_COMPAT/g, browser_compat)
     .replace(
       /\$DATE/g,
       doc.modified ? new Date(doc.modified).toISOString() : "*date not known*"
