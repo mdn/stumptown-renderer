@@ -85,14 +85,22 @@ def analyze_pr(build_directory: Path, config):
 
 
 def post_about_deployment(build_directory: Path, **config):
+    max_urls = config["max_urls"]
     links = []
-    for doc in get_built_docs(build_directory):
+    overflow = 0
+    for i, doc in enumerate(get_built_docs(build_directory)):
+        if i >= max_urls:
+            overflow += 1
+            continue
         url = mdn_url_to_dev_url(config["prefix"], doc["mdn_url"])
         links.append(f"- <{url}>")
 
     heading = "## Preview URLs\n\n"
+    footer = "\n"
     if links:
-        return heading + "\n".join(links)
+        if overflow:
+            footer += f"\n{explain_overflow(max_urls, overflow)}"
+        return heading + "\n".join(links) + footer
 
     return heading + "*seems not a single file was built!* 🙀"
 
@@ -105,6 +113,7 @@ def mdn_url_to_dev_url(prefix, mdn_url):
 def post_about_dangerous_content(
     build_directory: Path, patch: Optional[PatchSet], **config
 ):
+    max_urls = config["max_urls"]
 
     OK_URL_PREFIXES = [
         "https://github.com/mdn/",
@@ -114,7 +123,13 @@ def post_about_dangerous_content(
 
     patch_lines = get_patch_lines(patch) if patch else {}
 
-    for doc in get_built_docs(build_directory):
+    overflow = 0
+
+    for i, doc in enumerate(get_built_docs(build_directory)):
+        if i >= max_urls:
+            overflow += 1
+            continue
+
         rendered_html = "\n".join(
             x["value"]["content"]
             for x in doc["body"]
@@ -171,6 +186,7 @@ def post_about_dangerous_content(
             comments.append((doc, "No external URLs"))
 
     heading = "## External URLs\n\n"
+    footer = "\n"
     if comments:
         per_doc_comments = []
         for doc, comment in comments:
@@ -187,23 +203,35 @@ def post_about_dangerous_content(
             lines.append("")
 
             per_doc_comments.append("\n".join(lines))
-        return heading + "\n---\n".join(per_doc_comments)
+        if overflow:
+            footer += f"\n{explain_overflow(max_urls, overflow)}"
+
+        return heading + "\n---\n".join(per_doc_comments) + footer
     else:
-        return heading + "*no external links in the built pages* 👱🏽"
+        return heading + "*no external links in the built pages* 👱🏽" + footer
 
 
 def post_about_flaws(build_directory: Path, **config):
-
+    max_urls = config["max_urls"]
     comments = []
 
     MAX_FLAW_EXPLANATION = 5
 
     docs_with_zero_flaws = 0
 
+    overflow = 0
+
+    count = 0
     for doc in get_built_docs(build_directory):
         if not doc.get("flaws"):
             docs_with_zero_flaws += 1
             continue
+
+        if count >= max_urls:
+            overflow += 1
+            continue
+
+        count += 1
 
         flaws_list = []
         for flaw_name, flaw_values in doc["flaws"].items():
@@ -233,6 +261,7 @@ def post_about_flaws(build_directory: Path, **config):
         return count
 
     heading = "## Flaws\n\n"
+    footer = "\n"
 
     if comments:
         if docs_with_zero_flaws:
@@ -259,9 +288,13 @@ def post_about_flaws(build_directory: Path, **config):
             lines.append(comment)
 
             per_doc_comments.append("\n".join(lines))
-        return heading + "\n\n---\n\n".join(per_doc_comments)
+
+        if overflow:
+            footer += f"\n{explain_overflow(max_urls, overflow)}"
+
+        return heading + "\n\n---\n\n".join(per_doc_comments) + footer
     else:
-        return heading + "*None!* 🎉"
+        return heading + "*None!* 🎉" + footer
 
 
 def get_built_docs(build_directory: Path):
@@ -317,3 +350,7 @@ def get_patch_lines(patch: PatchSet):
 
         patch_lines[file_path] = "".join(new_lines)
     return patch_lines
+
+
+def explain_overflow(max, overflow):
+    return f"**⚠️Too many URLs! Capped at {max}. Overflow of {overflow}.**"

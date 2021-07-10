@@ -265,6 +265,11 @@ def upload(ctx, directory: Path, **kwargs):
     default=None,
     callback=validate_optional_file,
 )
+@click.option(
+    "--max-urls",
+    help=("Maximum number of URLs to show if the PR touches too many files."),
+    default=100,
+)
 @click.argument("directory", type=click.Path(), callback=validate_directory)
 @click.pass_context
 def analyze_pr_build(ctx, directory: Path, **kwargs):

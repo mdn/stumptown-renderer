@@ -18,6 +18,7 @@ DEFAULT_CONFIG = {
     "dry_run": False,
     "github_token": "",
     "diff_file": None,
+    "max_urls": 99,
 }
 
 
