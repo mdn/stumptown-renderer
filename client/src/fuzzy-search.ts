@@ -60,7 +60,11 @@ export class FuzzySearch {
     // each match's ranges so we can finally result a list of sub-strings.
     const res: CombinedMatchResult[] = candidates
       .map((doc) => {
-        const matched = match(needle, doc.url, {
+        // The needle will always start with a `/` and so will always the `doc.url`
+        // but it's not interesting to match on it. So, essentially,
+        // match `wboo` with `en-US/docs/Web/Foo`
+        // instead of `/wboo` with `/en-US/docs/Web/Foo`
+        const matched = match(needle.slice(1), doc.url.slice(1), {
           withScore: true,
           withRanges: true,
         });
@@ -79,7 +83,12 @@ export class FuzzySearch {
       return Object.assign(
         {
           substrings: matchResult.ranges
-            ? getSubstringsFromRanges(matchResult.url, matchResult.ranges)
+            ? // Have to remember to strip the leading `/` from the URL because
+              // that's the assumption the `matchResult.ranges` was built on.
+              getSubstringsFromRanges(
+                matchResult.url.slice(1),
+                matchResult.ranges
+              )
             : [],
         },
         matchResult
@@ -105,8 +114,26 @@ export class FuzzySearch {
 //   <mark>ML</mark>
 //
 // ...in the final rendering of the search results.
-function getSubstringsFromRanges(string: string, ranges: Range[]): Substring[] {
+function getSubstringsFromRanges(
+  string: string,
+  ranges: Range[],
+  prefix = "/"
+): Substring[] {
   const substrings: Substring[] = [];
+  // The prefix is to make up from what was stripped from the input string.
+  substrings.push({ str: prefix, match: false });
+
+  // When the first range doesn't start at 0, inject everything up until the first
+  // match.
+  // This happens because we migh be matching the string `boo` to `en-US/docs/Web/Foo`
+  // so the ranges won't start until the point `b` (13). But we mustn't forget
+  // the `en-US/docs/We` start.
+  if (ranges[0].start !== 0) {
+    substrings.push({
+      str: string.slice(0, ranges[0].start),
+      match: false,
+    });
+  }
   ranges.forEach((range, i) => {
     const { start, stop } = range;
     substrings.push({ str: string.slice(start, stop), match: true });
