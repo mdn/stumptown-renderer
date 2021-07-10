@@ -1,0 +1,15 @@
+@import "~@mdn/minimalist/sass/vars/layout";
+
+.authButtons {
+  margin: 0 auto;
+  max-width: 250px;
+  width: 100%;
+}
+
+.authButton {
+  margin-bottom: $base-spacing;
+}
+
+.signOutForm {
+  text-align: center;
+}

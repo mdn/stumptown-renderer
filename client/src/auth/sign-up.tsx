@@ -5,8 +5,8 @@ import { mutate } from "swr";
 import { useLocale } from "../hooks";
 import { useUserData } from "../user-context";
 
-import "./index.scss";
-import "./sign-up.scss";
+import sharedStyles from "./shared.module.scss";
+import styles from "./sign-up.module.scss";
 
 interface UserDetails {
   name?: string;
@@ -31,7 +31,7 @@ export default function SignUpApp() {
       <div>
         <h2>You're already signed up</h2>
         {/* XXX Include a link to the settings page */}
-        <Link to={`/${locale}/`} className="back">
+        <Link to={`/${locale}/`} className={styles.back}>
           Return to the home page
         </Link>
         .
@@ -141,7 +141,7 @@ export default function SignUpApp() {
       )}
 
       <form
-        className="complete-sign-in"
+        className={styles.completeSignIn}
         method="post"
         onSubmit={(event) => {
           event.preventDefault();
@@ -204,9 +204,9 @@ function DisplaySignupDetails({
     providerVerbose = "GitHub";
   }
   return (
-    <p className="lead">
+    <p className={sharedStyles.lead}>
       You are signing in to MDN Web Docs with{" "}
-      <span className="provider-name">{providerVerbose}</span>
+      <span className={styles.providerName}>{providerVerbose}</span>
       {username && ` as ${username}`}.
     </p>
   );

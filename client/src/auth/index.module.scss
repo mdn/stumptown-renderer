@@ -1,6 +1,6 @@
 @import "~@mdn/minimalist/sass/vars/layout";
 
-.page-content-container.auth-page-container {
+:global(.page-content-container).authPageContainer {
   align-items: center;
   display: flex;
   flex-flow: column;
@@ -17,14 +17,24 @@
   h1 {
     margin: $base-spacing 0;
   }
+}
 
-  .lead {
-    max-width: 35rem;
-    max-width: 60ch;
-    text-align: center;
+.signUp {
+  text-align: center;
+
+  :global(a) {
+    &:link,
+    &:visited {
+      text-decoration: underline;
+    }
+
+    &:hover,
+    &:focus {
+      text-decoration: none;
+    }
   }
 
-  .notecard {
+  :global(.notecard) {
     width: 35%;
   }
 }

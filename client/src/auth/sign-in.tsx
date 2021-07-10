@@ -6,8 +6,8 @@ import { useLocale } from "../hooks";
 import { ReactComponent as GithubLogo } from "@mdn/dinocons/brands/github-mark-small.svg";
 import { ReactComponent as GoogleLogo } from "@mdn/dinocons/brands/google-mono.svg";
 
-import "./index.scss";
-import "./sign-in.scss";
+import sharedStyles from "./shared.module.scss";
+import styles from "./sign-in.module.scss";
 
 export default function SignInApp() {
   const [searchParams] = useSearchParams();
@@ -58,7 +58,7 @@ export default function SignInApp() {
       {userData ? (
         userData.isAuthenticated ? (
           <form
-            className="sign-out-form"
+            className={styles.signOutForm}
             method="post"
             action={`${prefix}/${locale}/users/signout`}
           >
@@ -72,13 +72,13 @@ export default function SignInApp() {
           </form>
         ) : (
           <>
-            <p className="lead">
+            <p className={sharedStyles.lead}>
               Sign in to your MDN Web Docs account. If you haven’t already
               created an account, you will be prompted to do so after signing
               in.
             </p>
-            <ul className="auth-buttons">
-              <li>
+            <ul className={styles.authButtons}>
+              <li className={styles.authButton}>
                 <a
                   href={`${prefix}/users/github/login/?${sp.toString()}`}
                   className="button icon-button outline"
@@ -90,7 +90,7 @@ export default function SignInApp() {
                   Sign in with GitHub&trade;
                 </a>
               </li>
-              <li>
+              <li className={styles.authButton}>
                 <a
                   href={`${prefix}/users/google/login/?${sp.toString()}`}
                   className="button icon-button outline"

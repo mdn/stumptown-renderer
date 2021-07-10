@@ -2,16 +2,19 @@ import React from "react";
 
 import { Loading } from "../ui/atoms/loading";
 import { PageContentContainer } from "../ui/atoms/page-content";
+import styles from "./index.module.scss";
 
 const SignInApp = React.lazy(() => import("./sign-in"));
 const SignUpApp = React.lazy(() => import("./sign-up"));
 
 function Container({
-  children,
   className,
+  loadingMessage,
+  children,
 }: {
+  className?: string;
+  loadingMessage: string;
   children: React.ReactNode;
-  className: string;
 }) {
   const isServer = typeof window === "undefined";
   const pageTitle = "Sign in to MDN Web Docs";
@@ -19,7 +22,9 @@ function Container({
     document.title = pageTitle;
   }, []);
   return (
-    <PageContentContainer extraClasses={`auth-page-container ${className}`}>
+    <PageContentContainer
+      extraClasses={`${styles.authPageContainer} ${className}`}
+    >
       {/* The reason for displaying this <h1> here (and for SignUp too)
           is to avoid an unnecessary "flicker".
           component here is loaded SSR and is immediately present.
@@ -28,29 +33,27 @@ function Container({
           allowing this to be part of the main JS bundle.
        */}
       <h1 className="slab-highlight">{pageTitle}</h1>
-      {!isServer && children}
+      {!isServer && (
+        <React.Suspense
+          fallback={<Loading message={loadingMessage} minHeight={400} />}
+        >
+          {children}
+        </React.Suspense>
+      )}
     </PageContentContainer>
   );
 }
 export function SignIn() {
   return (
-    <Container className="sign-in">
-      <React.Suspense
-        fallback={<Loading message="Loading sign in…" minHeight={400} />}
-      >
-        <SignInApp />
-      </React.Suspense>
+    <Container loadingMessage="Loading sign in…">
+      <SignInApp />
     </Container>
   );
 }
 export function SignUp() {
   return (
-    <Container className="sign-up">
-      <React.Suspense
-        fallback={<Loading message="Loading sign up…" minHeight={400} />}
-      >
-        <SignUpApp />
-      </React.Suspense>
+    <Container className={styles.signUp} loadingMessage="Loading sign up…">
+      <SignUpApp />
     </Container>
   );
 }

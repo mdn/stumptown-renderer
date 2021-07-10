@@ -1,0 +1,40 @@
+@use "sass:math";
+
+@import "../ui/atoms/avatar/avatar";
+
+.providerName {
+  font-weight: bold;
+}
+
+.completeSignIn {
+  align-items: center;
+  display: flex;
+  flex-flow: column;
+  margin-bottom: $base-spacing;
+  max-width: 250px;
+
+  .button {
+    margin-top: math.div($base-spacing, 2);
+  }
+}
+
+.back {
+  &::before {
+    background: transparent url("~@mdn/dinocons/arrows/arrow.svg") 0 0/14px
+      no-repeat;
+    content: "";
+    display: inline-block;
+    height: 14px;
+    margin-right: math.div($base-spacing, 4);
+    transform: rotate(-90deg);
+    vertical-align: middle;
+    width: 14px;
+  }
+
+  &:hover,
+  &:focus {
+    &::before {
+      margin-right: math.div($base-spacing, 3);
+    }
+  }
+}
