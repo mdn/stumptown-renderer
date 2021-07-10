@@ -7,8 +7,9 @@
   $0 - Element name
   $1 - Text to display (optional)
   $2 - Anchor within the page (optional)
+  $3 - Ignore flaw macro (optional)
 */
-let elementName = $0.toString().toLowerCase();
+const elementName = $0.toString().toLowerCase();
 let linkText = ($1 || elementName);
 switch (env.locale) {
     case 'ja':
@@ -19,12 +20,10 @@ switch (env.locale) {
     default: break;
 }
 
-let sectionName = mdn.localString({
-    "es": "Elemento",
-    "en-US": "Element"
-});
-let url = "/" + env.locale + "/docs/Web/HTML/" + sectionName + "/" +
-    elementName;
+const sectionName = "Element"
+const baseURL = `/${env.locale}/docs/Web/HTML`;
+const urlPath = `/${sectionName}/${elementName}`
+let url = `${baseURL}${urlPath}`;
 
 // Add anchor after fetching the page contents
 url += $2;
@@ -33,5 +32,23 @@ if (linkText === elementName && elementName.indexOf(" ") === -1) {
     linkText = "<code>&lt;" + linkText + "&gt;</code>";
 }
 
-let link = "<a href=\"" + url + "\">" + linkText + "</a>";
+// If you use this macro directly in a page like this:
+//
+//   {{HTMLElement("abbr")}}
+//
+// you *want* flaws to bubble up. E.g. a typo like `{{HTMLElement("abbbr")}}`
+// But this macro is called from another macro, like `HTMLRef` then, all those
+// macro calls should be "supressed" because it's a problem with the that sidebar
+// macro, not the page the current user is viewing/working on.
+// So if this 4th argument is passed, it will potentially ignore the macro flaw.
+const ignoreFlawMacro = $3;
+
+const link = web.smartLink(
+    url,
+    null,
+    linkText,
+    sectionName + '/' + elementName,
+    baseURL,
+    ignoreFlawMacro
+);
 %><%- link %>

@@ -56,18 +56,22 @@ if (found_tag != undefined && found_tag != null && found_tag.length) {
     }
 }
 
+function wrapHTMLElement(name) {
+    return template("HTMLElement", [name, "", "", "HTMLRef"]);
+}
+
 var resultGuide = [];
 var resultAPI = [];
 
  if (s_html_href) {  %>
   <section class="Quick_links" id="Quick_Links">
   <ol>
-   <% if (found_tag) { 
+   <% if (found_tag) {
         for( aPage in resultGuide) { // Tutorials and guides matching
   %>
             <li><a href="<%-resultGuide[aPage].url%>"><%-resultGuide[aPage].title%></a></li>
   <%    }
-        for (slugLeaf in resultHTML) { // HTML entities matching 
+        for (slugLeaf in resultHTML) { // HTML entities matching
             if (resultHTML[slugLeaf] === "heading_elements") { // Special case for <h1>…<h6>
   %>
             <li><%- await template("HTMLelement", ["Heading_elements", "<code>&lt;h1&gt;-&lt;h6&gt;</code>"]) %></li>
@@ -77,11 +81,11 @@ var resultAPI = [];
   %>
             <li><%- await template("HTMLelement", [resultHTML[slugLeaf]]) %></li>
   <%        }
-        } 
-        for (slugLeaf in resultAPI) { // HTML-DOM interfaces matching 
+        }
+        for (slugLeaf in resultAPI) { // HTML-DOM interfaces matching
   %>
             <li><%- await template("domxref", [resultAPI[slugLeaf]]) %></li>
-  <%    } 
+  <%    }
     } %>
     <% if (env.slug.includes("/HTML/Element/input")) { %>
    <li><details open><summary><%-text['Input_types']%></summary>
@@ -90,209 +94,204 @@ var resultAPI = [];
    <li><details><summary><%-s_html_ref_title%></summary><ol>
    <li>A
  <ol>
-  <li><%-await template("HTMLElement", ["a"])%></li>
-  <li><%-await template("HTMLElement", ["abbr"])%></li>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["acronym"])%></s></li>
-  <li><%-await template("HTMLElement", ["address"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["applet"])%></s></li>
-  <li><%-await template("HTMLElement", ["area"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["article"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["aside"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["audio"])%></li>
+  <li><%-await wrapHTMLElement("a")%></li>
+  <li><%-await wrapHTMLElement("abbr")%></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("acronym")%></s></li>
+  <li><%-await wrapHTMLElement("address")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("applet")%></s></li>
+  <li><%-await wrapHTMLElement("area")%></li>
+  <li class="html5"><%-await wrapHTMLElement("article")%></li>
+  <li class="html5"><%-await wrapHTMLElement("aside")%></li>
+  <li class="html5"><%-await wrapHTMLElement("audio")%></li>
  </ol>
  </li><li>B
  <ol>
-  <li><%-await template("HTMLElement", ["b"])%></li>
-  <li><%-await template("HTMLElement", ["base"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["basefont"])%></s></li>
-  <li class="html5"><%-await template("HTMLElement", ["bdi"])%></li>
-  <li><%-await template("HTMLElement", ["bdo"])%></li>
-  <li><s class="nonStdElement"><%-await template("HTMLElement", ["bgsound"])%></s></li>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["big"])%></s></li>
-  <li><s class="nonStdElement"><%-await template("HTMLElement", ["blink"])%></s></li>
-  <li><%-await template("HTMLElement", ["blockquote"])%></li>
-  <li><%-await template("HTMLElement", ["body"])%></li>
-  <li><%-await template("HTMLElement", ["br"])%></li>
-  <li><%-await template("HTMLElement", ["button"])%></li>
+  <li><%-await wrapHTMLElement("b")%></li>
+  <li><%-await wrapHTMLElement("base")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("basefont")%></s></li>
+  <li class="html5"><%-await wrapHTMLElement("bdi")%></li>
+  <li><%-await wrapHTMLElement("bdo")%></li>
+  <li><s class="nonStdElement"><%-await wrapHTMLElement("bgsound")%></s></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("big")%></s></li>
+  <li><s class="nonStdElement"><%-await wrapHTMLElement("blink")%></s></li>
+  <li><%-await wrapHTMLElement("blockquote")%></li>
+  <li><%-await wrapHTMLElement("body")%></li>
+  <li><%-await wrapHTMLElement("br")%></li>
+  <li><%-await wrapHTMLElement("button")%></li>
  </ol>
  </li><li>C
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["canvas"])%></li>
-  <li><%-await template("HTMLElement", ["caption"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["center"])%></s></li>
-  <li><%-await template("HTMLElement", ["cite"])%></li>
-  <li><%-await template("HTMLElement", ["code"])%></li>
-  <li><%-await template("HTMLElement", ["col"])%></li>
-  <li><%-await template("HTMLElement", ["colgroup"])%></li>
-  <li class="webcomp"><%-await template("HTMLElement", ["content"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("canvas")%></li>
+  <li><%-await wrapHTMLElement("caption")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("center")%></s></li>
+  <li><%-await wrapHTMLElement("cite")%></li>
+  <li><%-await wrapHTMLElement("code")%></li>
+  <li><%-await wrapHTMLElement("col")%></li>
+  <li><%-await wrapHTMLElement("colgroup")%></li>
+  <li class="webcomp"><%-await wrapHTMLElement("content")%></li>
  </ol>
  </li><li>D
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["data"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["datalist"])%></li>
-  <li><%-await template("HTMLElement", ["dd"])%></li>
-  <li><%-await template("HTMLElement", ["del"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["details"])%></li>
-  <li><%-await template("HTMLElement", ["dfn"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["dialog"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["dir"])%></s></li>
-  <li><%-await template("HTMLElement", ["div"])%></li>
-  <li><%-await template("HTMLElement", ["dl"])%></li>
-  <li><%-await template("HTMLElement", ["dt"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("data")%></li>
+  <li class="html5"><%-await wrapHTMLElement("datalist")%></li>
+  <li><%-await wrapHTMLElement("dd")%></li>
+  <li><%-await wrapHTMLElement("del")%></li>
+  <li class="html5"><%-await wrapHTMLElement("details")%></li>
+  <li><%-await wrapHTMLElement("dfn")%></li>
+  <li class="html5"><%-await wrapHTMLElement("dialog")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("dir")%></s></li>
+  <li><%-await wrapHTMLElement("div")%></li>
+  <li><%-await wrapHTMLElement("dl")%></li>
+  <li><%-await wrapHTMLElement("dt")%></li>
  </ol>
  </li><li>E
  <ol>
-  <li><%-await template("HTMLElement", ["em"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["embed"])%></li>
+  <li><%-await wrapHTMLElement("em")%></li>
+  <li class="html5"><%-await wrapHTMLElement("embed")%></li>
  </ol>
  </li><li>F
  <ol>
-  <li><%-await template("HTMLElement", ["fieldset"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["figcaption"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["figure"])%></li>
-  <li><s class="deprecatedElement obsoleteElement"><%-await template("HTMLElement", ["font"])%></s></li>
-  <li class="html5"><%-await template("HTMLElement", ["footer"])%></li>
-  <li><%-await template("HTMLElement", ["form"])%></li>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["frame"])%></s></li>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["frameset"])%></s></li>
+  <li><%-await wrapHTMLElement("fieldset")%></li>
+  <li class="html5"><%-await wrapHTMLElement("figcaption")%></li>
+  <li class="html5"><%-await wrapHTMLElement("figure")%></li>
+  <li><s class="deprecatedElement obsoleteElement"><%-await wrapHTMLElement("font")%></s></li>
+  <li class="html5"><%-await wrapHTMLElement("footer")%></li>
+  <li><%-await wrapHTMLElement("form")%></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("frame")%></s></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("frameset")%></s></li>
  </ol>
  </li><li>G H
  <ol>
-  <li><%-await template("HTMLElement", ["h1"])%></li>
-  <li><%-await template("HTMLElement", ["h2"])%></li>
-  <li><%-await template("HTMLElement", ["h3"])%></li>
-  <li><%-await template("HTMLElement", ["h4"])%></li>
-  <li><%-await template("HTMLElement", ["h5"])%></li>
-  <li><%-await template("HTMLElement", ["h6"])%></li>
-  <li><%-await template("HTMLElement", ["head"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["header"])%></li>
-  <li class="html5"><s class="deprecatedElement obsoleteElement"><%-await template("HTMLElement", ["hgroup"])%></s></li>
-  <li><%-await template("HTMLElement", ["hr"])%></li>
-  <li><%-await template("HTMLElement", ["html"])%></li>
+  <li><%-await wrapHTMLElement("Heading_elements")%></li>
+  <li><%-await wrapHTMLElement("head")%></li>
+  <li class="html5"><%-await wrapHTMLElement("header")%></li>
+  <li class="html5"><s class="deprecatedElement obsoleteElement"><%-await wrapHTMLElement("hgroup")%></s></li>
+  <li><%-await wrapHTMLElement("hr")%></li>
+  <li><%-await wrapHTMLElement("html")%></li>
  </ol>
  </li><li>I
  <ol>
-  <li><%-await template("HTMLElement", ["i"])%></li>
-  <li><%-await template("HTMLElement", ["iframe"])%></li>
-  <li><%-await template("HTMLElement", ["img"])%></li>
-  <li><%-await template("HTMLElement", ["input"])%></li>
-  <li><%-await template("HTMLElement", ["ins"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["isindex"])%></s></li>
+  <li><%-await wrapHTMLElement("i")%></li>
+  <li><%-await wrapHTMLElement("iframe")%></li>
+  <li><%-await wrapHTMLElement("img")%></li>
+  <li><%-await wrapHTMLElement("input")%></li>
+  <li><%-await wrapHTMLElement("ins")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("isindex")%></s></li>
  </ol>
  </li><li>J K
  <ol>
-  <li><%-await template("HTMLElement", ["kbd"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["keygen"])%></li>
+  <li><%-await wrapHTMLElement("kbd")%></li>
+  <li class="html5"><%-await wrapHTMLElement("keygen")%></li>
  </ol>
  </li><li>L
  <ol>
-  <li><%-await template("HTMLElement", ["label"])%></li>
-  <li><%-await template("HTMLElement", ["legend"])%></li>
-  <li><%-await template("HTMLElement", ["li"])%></li>
-  <li><%-await template("HTMLElement", ["link"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["listing"])%></s></li>
+  <li><%-await wrapHTMLElement("label")%></li>
+  <li><%-await wrapHTMLElement("legend")%></li>
+  <li><%-await wrapHTMLElement("li")%></li>
+  <li><%-await wrapHTMLElement("link")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("listing")%></s></li>
  </ol>
  </li><li>M
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["main"])%></li>
-  <li><%-await template("HTMLElement", ["map"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["mark"])%></li>
-  <li><s class="nonStdElement"><%-await template("HTMLElement", ["marquee"])%></s></li>
-  <li class="html5"><%-await template("HTMLElement", ["menu"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["menuitem"])%></li>
-  <li><%-await template("HTMLElement", ["meta"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["meter"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("main")%></li>
+  <li><%-await wrapHTMLElement("map")%></li>
+  <li class="html5"><%-await wrapHTMLElement("mark")%></li>
+  <li><s class="nonStdElement"><%-await wrapHTMLElement("marquee")%></s></li>
+  <li class="html5"><%-await wrapHTMLElement("menu")%></li>
+  <li class="html5"><%-await wrapHTMLElement("menuitem")%></li>
+  <li><%-await wrapHTMLElement("meta")%></li>
+  <li class="html5"><%-await wrapHTMLElement("meter")%></li>
  </ol>
  </li><li>N
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["nav"])%></li>
-  <li><s class="nonStdElement"><%-await template("HTMLElement", ["nobr"])%></s></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["noframes"])%></s></li>
-  <li><%-await template("HTMLElement", ["noscript"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("nav")%></li>
+  <li><s class="nonStdElement"><%-await wrapHTMLElement("nobr")%></s></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("noframes")%></s></li>
+  <li><%-await wrapHTMLElement("noscript")%></li>
  </ol>
  </li><li>O
  <ol>
-  <li><%-await template("HTMLElement", ["object"])%></li>
-  <li><%-await template("HTMLElement", ["ol"])%></li>
-  <li><%-await template("HTMLElement", ["optgroup"])%></li>
-  <li><%-await template("HTMLElement", ["option"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["output"])%></li>
+  <li><%-await wrapHTMLElement("object")%></li>
+  <li><%-await wrapHTMLElement("ol")%></li>
+  <li><%-await wrapHTMLElement("optgroup")%></li>
+  <li><%-await wrapHTMLElement("option")%></li>
+  <li class="html5"><%-await wrapHTMLElement("output")%></li>
  </ol>
  </li><li>P
  <ol>
-  <li><%-await template("HTMLElement", ["p"])%></li>
-  <li><%-await template("HTMLElement", ["param"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["picture"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["plaintext"])%></s></li>
-  <li><%-await template("HTMLElement", ["pre"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["progress"])%></li>
+  <li><%-await wrapHTMLElement("p")%></li>
+  <li><%-await wrapHTMLElement("param")%></li>
+  <li class="html5"><%-await wrapHTMLElement("picture")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("plaintext")%></s></li>
+  <li><%-await wrapHTMLElement("pre")%></li>
+  <li class="html5"><%-await wrapHTMLElement("progress")%></li>
  </ol>
  </li><li>Q
  <ol>
-  <li><%-await template("HTMLElement", ["q"])%></li>
+  <li><%-await wrapHTMLElement("q")%></li>
  </ol>
  </li><li>R
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["rp"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["rt"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["rtc"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["ruby"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("rp")%></li>
+  <li class="html5"><%-await wrapHTMLElement("rt")%></li>
+  <li class="html5"><%-await wrapHTMLElement("rtc")%></li>
+  <li class="html5"><%-await wrapHTMLElement("ruby")%></li>
  </ol>
  </li><li>S
  <ol>
-  <li><%-await template("HTMLElement", ["s"])%></li>
-  <li><%-await template("HTMLElement", ["samp"])%></li>
-  <li><%-await template("HTMLElement", ["script"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["section"])%></li>
-  <li><%-await template("HTMLElement", ["select"])%></li>
-  <li class="webcomp"><%-await template("HTMLElement", ["shadow"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["slot"])%></li>
-  <li><%-await template("HTMLElement", ["small"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["source"])%></li>
-  <li><s class="nonStdElement"><%-await template("HTMLElement", ["spacer"])%></s></li>
-  <li><%-await template("HTMLElement", ["span"])%></li>
-  <li><s class="obsoleteElement deprecatedElement"><%-await template("HTMLElement", ["strike"])%></s></li>
-  <li><%-await template("HTMLElement", ["strong"])%></li>
-  <li><%-await template("HTMLElement", ["style"])%></li>
-  <li><%-await template("HTMLElement", ["sub"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["summary"])%></li>
-  <li><%-await template("HTMLElement", ["sup"])%></li>
+  <li><%-await wrapHTMLElement("s")%></li>
+  <li><%-await wrapHTMLElement("samp")%></li>
+  <li><%-await wrapHTMLElement("script")%></li>
+  <li class="html5"><%-await wrapHTMLElement("section")%></li>
+  <li><%-await wrapHTMLElement("select")%></li>
+  <li class="webcomp"><%-await wrapHTMLElement("shadow")%></li>
+  <li class="html5"><%-await wrapHTMLElement("slot")%></li>
+  <li><%-await wrapHTMLElement("small")%></li>
+  <li class="html5"><%-await wrapHTMLElement("source")%></li>
+  <li><s class="nonStdElement"><%-await wrapHTMLElement("spacer")%></s></li>
+  <li><%-await wrapHTMLElement("span")%></li>
+  <li><s class="obsoleteElement deprecatedElement"><%-await wrapHTMLElement("strike")%></s></li>
+  <li><%-await wrapHTMLElement("strong")%></li>
+  <li><%-await wrapHTMLElement("style")%></li>
+  <li><%-await wrapHTMLElement("sub")%></li>
+  <li class="html5"><%-await wrapHTMLElement("summary")%></li>
+  <li><%-await wrapHTMLElement("sup")%></li>
  </ol>
  </li><li>T
  <ol>
-  <li><%-await template("HTMLElement", ["table"])%></li>
-  <li><%-await template("HTMLElement", ["tbody"])%></li>
-  <li><%-await template("HTMLElement", ["td"])%></li>
-  <li class="webcomp"><%-await template("HTMLElement", ["template"])%></li>
-  <li><%-await template("HTMLElement", ["textarea"])%></li>
-  <li><%-await template("HTMLElement", ["tfoot"])%></li>
-  <li><%-await template("HTMLElement", ["th"])%></li>
-  <li><%-await template("HTMLElement", ["thead"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["time"])%></li>
-  <li><%-await template("HTMLElement", ["title"])%></li>
-  <li><%-await template("HTMLElement", ["tr"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["track"])%></li>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["tt"])%></s></li>
+  <li><%-await wrapHTMLElement("table")%></li>
+  <li><%-await wrapHTMLElement("tbody")%></li>
+  <li><%-await wrapHTMLElement("td")%></li>
+  <li class="webcomp"><%-await wrapHTMLElement("template")%></li>
+  <li><%-await wrapHTMLElement("textarea")%></li>
+  <li><%-await wrapHTMLElement("tfoot")%></li>
+  <li><%-await wrapHTMLElement("th")%></li>
+  <li><%-await wrapHTMLElement("thead")%></li>
+  <li class="html5"><%-await wrapHTMLElement("time")%></li>
+  <li><%-await wrapHTMLElement("title")%></li>
+  <li><%-await wrapHTMLElement("tr")%></li>
+  <li class="html5"><%-await wrapHTMLElement("track")%></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("tt")%></s></li>
  </ol>
  </li><li>U
  <ol>
-  <li><%-await template("HTMLElement", ["u"])%></li>
-  <li><%-await template("HTMLElement", ["ul"])%></li>
+  <li><%-await wrapHTMLElement("u")%></li>
+  <li><%-await wrapHTMLElement("ul")%></li>
  </ol>
  </li><li>V
  <ol>
-  <li><%-await template("HTMLElement", ["var"])%></li>
-  <li class="html5"><%-await template("HTMLElement", ["video"])%></li>
+  <li><%-await wrapHTMLElement("var")%></li>
+  <li class="html5"><%-await wrapHTMLElement("video")%></li>
  </ol>
  </li><li>W
  <ol>
-  <li class="html5"><%-await template("HTMLElement", ["wbr"])%></li>
+  <li class="html5"><%-await wrapHTMLElement("wbr")%></li>
  </ol>
- </li><li>X Y Z 
+ </li><li>X Y Z
  <ol>
-  <li><s class="obsoleteElement"><%-await template("HTMLElement", ["xmp"])%></s></li>
+  <li><s class="obsoleteElement"><%-await wrapHTMLElement("xmp")%></s></li>
  </ol>
-    </li>  
+    </li>
    </ol>
    </details></li>
    </ol>
