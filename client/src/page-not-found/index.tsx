@@ -44,6 +44,25 @@ export function PageNotFound() {
         )}
 
         <p>
+          You've followed a link to a page that doesn't exist.
+          <br />
+          The page might not have been written yet or may have been deleted. It
+          is also possible that the link URL is incorrect. We recommend
+          searching for similar topics on MDN.
+          <br />
+          You can file an issue about this on{" "}
+          <a href="https://github.com/mdn/content/issues" className="external">
+            MDN's issue tracker
+          </a>
+          .<br />
+          If you'd like to fix it yourself, please follow the contribution
+          instructions on the{" "}
+          <a href="https://github.com/mdn/content/issues" className="external">
+            MDN content repo's README
+          </a>
+          .
+        </p>
+        <p>
           <a href="/">Go back to the home page</a>
         </p>
       </PageContentContainer>
