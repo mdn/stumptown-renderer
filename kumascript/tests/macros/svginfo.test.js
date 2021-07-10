@@ -424,6 +424,11 @@ describeMacro("svginfo", () => {
 
   TEST_CASE.forEach((test) => {
     itMacro(test.title, (macro) => {
+      macro.ctx.env.recordNonFatalError = () => {
+        return {
+          macroSource: "foo",
+        };
+      };
       if (test.env) {
         Object.keys(test.env).forEach((key) => {
           macro.ctx.env[key] = test.env[key];

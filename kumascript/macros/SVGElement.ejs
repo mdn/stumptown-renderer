@@ -3,15 +3,26 @@
 //
 //    Parameters:
 //        $0  SVG element name
+//        $1  (optional) ignoreFlawMacro
 
-let slug = {
-    'en-US': "Element"
-};
+const term = $0;
 
-let URL = "/" + env.locale + "/docs/Web/SVG/" + mdn.localString(slug) + "/" + $0;
-// Gather the page summary
+// If you use this macro directly in a page like this:
+//
+//   {{SVGElement("image")}}
+//
+// you *want* flaws to bubble up. E.g. a typo like `{{SVGElement("imge")}}`
+// But this macro is called from another macro, like `SVGRef` then, all those
+// macro calls' flaws should be "supressed" because it's a problem with the that
+// sidebar macro, not the page the current user is viewing/working on.
+// So if this 2nd argument is passed, it will potentially ignore the macro flaw.
+const ignoreFlawMacro = $1;
 
-let term = $0;
+const subPath = `Element/${term}`;
+const baseURL = `/${env.locale}/docs/Web/SVG`;
+const url = `${baseURL}/${subPath}`;
+const title = `<${term}>`;
+const link = web.smartLink(url, null, `<code>${kuma.htmlEscape(title)}</code>`, subPath, baseURL, ignoreFlawMacro);
 
 %>
-<a href="<%- URL %>"><code>&lt;<%= term %>&gt;</code></a>
+<%- link %>

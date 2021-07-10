@@ -145,7 +145,7 @@ module.exports = {
         return (
           '<a class="only-in-en-us" ' +
           'title="Currently only available in English (US)" ' +
-          `href="${enUSPage.url}"${flawAttribute}>${content} <span>(en-US)</span></a>`
+          `href="${enUSPage.url}"${flawAttribute}>${content} <small>(en-US)</small></a>`
         );
       }
     }
