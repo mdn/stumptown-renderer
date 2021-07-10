@@ -328,7 +328,7 @@ async function fixFixableFlaws(doc, options, document) {
   // Finally, summarized what happened...
   if (newRawBody !== rawBody) {
     // It changed the raw HTML of the source. So deal with this.
-    if (options.fixFlawsDryRun && options.fixFlawsVerbose) {
+    if (options.fixFlawsDryRun) {
       console.log(
         chalk.yellow(
           `Would modify "${document.fileInfo.path}" from fixable flaws.`

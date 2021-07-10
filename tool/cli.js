@@ -54,6 +54,17 @@ function tryOrExit(f) {
   };
 }
 
+const confirm = async (message, defaultAnswer = true) => {
+  const { answer } = await prompt({
+    type: "confirm",
+    name: "answer",
+    message,
+    default: defaultAnswer,
+  });
+
+  return answer;
+};
+
 program
   .bin("yarn tool")
   .name("tool")
@@ -164,14 +175,7 @@ program
       if (redirect) {
         console.log(chalk.green(`redirecting to: ${redirect}`));
       }
-      const { run } = yes
-        ? { run: true }
-        : await prompt({
-            type: "confirm",
-            message: "Proceed?",
-            name: "run",
-            default: true,
-          });
+      const run = yes || (await confirm("Proceed?"));
       if (run) {
         const removed = Document.remove(slug, locale, { recursive, redirect });
         console.log(chalk.green(`Moved ${removed.length} documents.`));
@@ -211,14 +215,7 @@ program
           .map(([from, to]) => `${chalk.red(from)} → ${chalk.green(to)}`)
           .join("\n")
       );
-      const { run } = yes
-        ? { run: true }
-        : await prompt({
-            type: "confirm",
-            message: "Proceed?",
-            name: "run",
-            default: true,
-          });
+      const run = yes || (await confirm("Proceed?"));
       if (run) {
         const moved = Document.move(oldSlug, newSlug, locale);
         console.log(chalk.green(`Moved ${moved.length} documents.`));
@@ -280,12 +277,10 @@ program
         throw new Error(`Slug ${slug} does not exist for ${locale}`);
       }
       const { doc } = await buildDocument(document);
-
-      const flaws = Object.values(doc.flaws || {})
-        .map((a) => a.length || 0)
-        .reduce((a, b) => a + b, 0);
-      if (flaws > 0) {
-        console.log(chalk.red(`Found ${flaws} flaws.`));
+      const flaws = Object.values(doc.flaws || {}).flat();
+      const flawCount = flaws.length;
+      if (flawCount > 0) {
+        console.log(chalk.red(`Found ${flawCount} flaws.`));
         okay = false;
       }
       try {
@@ -509,25 +504,35 @@ program
         fixFlaws: true,
         fixFlawsDryRun: true,
       });
-
-      const flaws = Object.values(doc.flaws || {})
-        .map((a) => a.filter((f) => f.fixable).length || 0)
-        .reduce((a, b) => a + b, 0);
-      if (flaws === 0) {
-        console.log(chalk.green("Found no fixable flaws!"));
+      let flaws = Object.values(doc.flaws || {}).flat();
+      const flawCount = flaws.length;
+      if (flawCount === 0) {
+        console.log(chalk.green("✓ All seems fine"));
         return;
       }
-      const { run } = yes
-        ? { run: true }
-        : await prompt({
-            type: "confirm",
-            message: `Proceed fixing ${flaws} flaws?`,
-            name: "run",
-            default: true,
+      const nonFixableFlaws = flaws.filter((f) => !f.fixable);
+      const fixableFlawCount = flawCount - nonFixableFlaws.length;
+      if (fixableFlawCount > 0) {
+        const question = `Proceed fixing ${fixableFlawCount} flaws?`;
+        const run = yes || (await confirm(question));
+        if (run) {
+          await buildDocument(document, {
+            fixFlaws: true,
+            fixFlawsVerbose: true,
           });
-      if (run) {
-        buildDocument(document, { fixFlaws: true, fixFlawsVerbose: true });
+        }
       }
+      console.log(
+        chalk.red(
+          `Found ${nonFixableFlaws.length} non-fixable flaws in "${document.fileInfo.path}".`
+        )
+      );
+      nonFixableFlaws.forEach((flaw) => {
+        console.log(
+          chalk.grey(`Could not fix (${flaw.id}) in ${slug}, because`),
+          `${flaw.explanation}`
+        );
+      });
     })
   )
 
