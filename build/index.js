@@ -10,6 +10,7 @@ const {
   Image,
   REPOSITORY_URLS,
   execGit,
+  getPopularities,
 } = require("../content");
 const kumascript = require("../kumascript");
 
@@ -556,6 +557,11 @@ async function buildDocument(document, documentOptions = {}) {
     ? Number(metadata.popularity.toFixed(4))
     : 0.0;
 
+  if (doc.popularity) {
+    doc.popularityRanking =
+      1 + getAllPopularityValues().filter((p) => p > doc.popularity).length;
+  }
+
   doc.modified = metadata.modified || null;
 
   const otherTranslations = document.translations || [];
@@ -630,6 +636,18 @@ async function buildLiveSamplePageFromURL(url) {
     }
   }
   throw new Error(`No live-sample "${sampleID}" found within ${documentURL}`);
+}
+
+// Module-level cache
+const allPopularityValues = [];
+
+function getAllPopularityValues() {
+  if (!allPopularityValues.length) {
+    for (const value of getPopularities().values()) {
+      allPopularityValues.push(value);
+    }
+  }
+  return allPopularityValues;
 }
 
 // This is used by the builder (yarn build) and by the server (JIT).

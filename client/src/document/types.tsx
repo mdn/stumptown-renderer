@@ -138,4 +138,6 @@ export interface Doc {
   isArchive: boolean;
   isTranslated: boolean;
   isActive: boolean;
+  popularity: number;
+  popularityRanking?: number;
 }

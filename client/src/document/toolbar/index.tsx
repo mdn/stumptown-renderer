@@ -42,6 +42,20 @@ export default function Toolbar({
           folder={doc.source.folder}
           filename={doc.source.filename}
         />
+
+        {doc.popularityRanking ? (
+          <small
+            title={`Meaning, there are ${
+              doc.popularityRanking - 1
+            } documents with more pageviews.`}
+          >
+            Popularity ranking: {getGetOrdinal(doc.popularityRanking)}
+          </small>
+        ) : (
+          <small title={`Not enough pageviews to have a popularity ranking.`}>
+            Popularity ranking: n/a
+          </small>
+        )}
       </div>
       {isReadOnly && (
         <p>
@@ -53,4 +67,11 @@ export default function Toolbar({
       <ToggleDocumentFlaws doc={doc} reloadPage={reloadPage} />
     </div>
   );
+}
+
+// https://gist.github.com/jlbruno/1535691/db35b4f3af3dcbb42babc01541410f291a8e8fac
+function getGetOrdinal(n: number) {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n.toLocaleString() + (s[(v - 20) % 10] || s[v] || s[0]);
 }
