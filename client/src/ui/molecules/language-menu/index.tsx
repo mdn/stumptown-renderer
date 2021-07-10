@@ -23,9 +23,27 @@ export function LanguageMenu({
   const navigate = useNavigate();
   const [preferredLocale, setPreferredLocale] = React.useState(locale);
 
-  function translateURL(destinationLocale: string) {
-    return pathname.replace(`/${locale}/`, `/${destinationLocale}/`);
-  }
+  // This effect makes you automatically navigate to the locale your cookie
+  // prefers if the current page's locale isn't what you prefer and the
+  // locale you prefer is one of the valid translations.
+  React.useEffect(() => {
+    const cookieLocale = getCookie(document.cookie);
+    if (
+      locale &&
+      cookieLocale &&
+      locale.toLowerCase() !== cookieLocale.toLowerCase() &&
+      translations
+        .map((t) => t.locale.toLowerCase())
+        .includes(cookieLocale.toLowerCase())
+    ) {
+      const newPathname = translateURL(pathname, locale, cookieLocale);
+      // Just to be absolutely paranoidly certain it's not going to redirect
+      // to the URL you're already don, we're doing this extra check.
+      if (newPathname !== pathname) {
+        navigate(newPathname);
+      }
+    }
+  }, [locale, pathname, navigate, translations]);
 
   return (
     <form
@@ -35,13 +53,8 @@ export function LanguageMenu({
         // The default is the current locale itself. If that's what's chosen,
         // don't bother redirecting.
         if (preferredLocale !== locale) {
-          const localeURL = translateURL(preferredLocale);
-          let cookieValueBefore = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith(`${PREFERRED_LOCALE_COOKIE_NAME}=`));
-          if (cookieValueBefore && cookieValueBefore.includes("=")) {
-            cookieValueBefore = cookieValueBefore.split("=")[1];
-          }
+          const localeURL = translateURL(pathname, locale, preferredLocale);
+          const cookieValueBefore = getCookie(document.cookie);
 
           for (const translation of translations) {
             if (translation.locale === preferredLocale) {
@@ -110,5 +123,26 @@ export function LanguageMenu({
         </button>
       </fieldset>
     </form>
+  );
+}
+
+function getCookie(cookie: string) {
+  let value = cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${PREFERRED_LOCALE_COOKIE_NAME}=`));
+  if (value && value.includes("=")) {
+    value = value.split("=")[1];
+  }
+  return value;
+}
+
+function translateURL(
+  pathname: string,
+  locale: string,
+  destinationLocale: string
+) {
+  return pathname.replace(
+    new RegExp(`^/${locale}/`, "i"),
+    `/${destinationLocale}/`
   );
 }

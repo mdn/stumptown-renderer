@@ -253,6 +253,18 @@ describe("Basic viewing of functional pages", () => {
     await expect(page).toClick("button", { text: "Change language" });
     await expect(page).toMatch("<foo>: Une page de test");
     expect(page.url()).toBe(testURL("/fr/docs/Web/Foo/"));
+
+    // Now that you've picked a cookie, if you go to a page whose URL doesn't
+    // match your preferred locale, it will automatically navigate to the locale
+    // you picked.
+    await page.goto(testURL("/en-us/docs/Web/Foo"));
+    await expect(page).toMatch("<foo>: Une page de test");
+    expect(page.url()).toBe(testURL("/fr/docs/Web/Foo/"));
+    // Now delete the cookie and it should not redirect this second time.
+    await page.deleteCookie({ name: "preferredlocale" });
+    await page.goto(testURL("/en-US/docs/Web/Foo"));
+    await expect(page).toMatch("<foo>: A test tag");
+    expect(page.url()).toBe(testURL("/en-US/docs/Web/Foo/"));
   });
 
   it("should redirect retired locale to English (document)", async () => {
