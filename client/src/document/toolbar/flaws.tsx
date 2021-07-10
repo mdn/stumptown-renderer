@@ -104,8 +104,13 @@ function useAnnotations(genericFlaws: GenericFlaw[]) {
     }
   }
 
+  function present(flawID: string) {
+    return Boolean(document.querySelector(`[data-flaw="${flawID}"]`));
+  }
+
   return {
     focus,
+    present,
   };
 }
 
@@ -693,6 +698,8 @@ function Macros({
     fetch(`/_open?${sp.toString()}`);
   }
 
+  const { focus, present } = useAnnotations(flaws);
+
   return (
     <div className="flaw flaw__macros">
       <h3>{humanizeFlawName("macros")}</h3>
@@ -710,6 +717,27 @@ function Macros({
           >
             <summary>
               <code>{flaw.name}</code> from <code>{flaw.macroName}</code>{" "}
+              <span
+                role="img"
+                aria-label="Click to highlight broken link"
+                title="Click to highlight broken link anchor"
+                style={{ cursor: "zoom-in" }}
+                onClick={(event) => {
+                  // Otherwise, since this is part of the `<details><summary>...`
+                  // we would here also be expanding the `<details>` tag.
+                  event.preventDefault();
+
+                  // Some macros such as sidebar macros don't turn as DOM
+                  // elements in the HTML so they can't be focussed in on.
+                  if (present(flaw.id)) {
+                    focus(flaw.id);
+                  } else {
+                    alert("Flaw not present in the rendered HTML.");
+                  }
+                }}
+              >
+                👀
+              </span>{" "}
               {isReadOnly ? (
                 <>
                   line {flaw.line}:{flaw.column}

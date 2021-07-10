@@ -154,6 +154,11 @@ test("content built foo page", () => {
     /\/en-us\/web\/fubar\/index\.html$/
   );
 
+  // Each `macros` flaw is assigned an ID. Make sure they're all truthy and unique.
+  expect(doc.flaws.macros.map((flaw) => flaw.id).every(Boolean)).toBeTruthy();
+  const set = new Set(doc.flaws.macros.map((flaw) => flaw.id));
+  expect(doc.flaws.macros.length).toBe(set.size);
+
   const htmlFile = path.join(builtFolder, "index.html");
   const html = fs.readFileSync(htmlFile, "utf-8");
   const $ = cheerio.load(html);

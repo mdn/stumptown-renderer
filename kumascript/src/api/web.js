@@ -100,9 +100,9 @@ module.exports = {
                 suggested,
               }
             );
-            flawAttribute = ` data-flaw-src="${util.htmlEscape(
-              flaw.macroSource
-            )}"`;
+            flawAttribute = ` data-flaw="${
+              flaw.id
+            }" data-flaw-src="${util.htmlEscape(flaw.macroSource)}"`;
           }
         } else {
           flaw = this.env.recordNonFatalError(
@@ -112,9 +112,9 @@ module.exports = {
               current: subpath,
             }
           );
-          flawAttribute = ` data-flaw-src="${util.htmlEscape(
-            flaw.macroSource
-          )}"`;
+          flawAttribute = ` data-flaw="${
+            flaw.id
+          }" data-flaw-src="${util.htmlEscape(flaw.macroSource)}"`;
         }
       }
       const titleAttribute = title ? ` title="${title}"` : "";
@@ -138,9 +138,9 @@ module.exports = {
             "broken-link",
             `${hrefpath} does not exist but fallbacked on ${enUSPage.url}`
           );
-          flawAttribute = ` data-flaw-src="${util.htmlEscape(
-            flaw.macroSource
-          )}"`;
+          flawAttribute = ` data-flaw="${
+            flaw.id
+          }" data-flaw-src="${util.htmlEscape(flaw.macroSource)}"`;
         }
         return (
           '<a class="only-in-en-us" ' +
@@ -156,7 +156,9 @@ module.exports = {
         "broken-link",
         `${hrefpath} does not exist`
       );
-      flawAttribute = ` data-flaw-src="${util.htmlEscape(flaw.macroSource)}"`;
+      flawAttribute = ` data-flaw="${flaw.id}" data-flaw-src="${util.htmlEscape(
+        flaw.macroSource
+      )}"`;
     }
     // Let's get a potentially localized title for when the document is missing.
     const titleWhenMissing = this.mdn.getLocalString(

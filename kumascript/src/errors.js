@@ -3,6 +3,14 @@
  * @prettier
  */
 
+// A global that increments every time it's used.
+// The purpose is to assign relatively unique "flaw IDs" for each
+// flaw error instance we generate.
+// This is probably not fully thread-safe but the context is that the
+// flaw IDs don't need to be globally unique. And since
+// each document's flaws are recorded in the same thread, it's safe enough.
+let errorUUIDIncr = 0;
+
 /**
  * This is the common superclass of the other error classes here.
  * It includes the code for excerpting the portion of the document that the
@@ -22,6 +30,7 @@ class SourceCodeError {
     this.macroName = macroName;
     this.sourceContext = this.getSourceContext(source);
     this.fatal = fatal;
+    this.id = `${name}-${errorUUIDIncr++}`;
   }
 
   get key() {
@@ -120,7 +129,7 @@ class SourceCodeError {
  * of the error.
  */
 class MacroInvocationError extends SourceCodeError {
-  constructor(error, source) {
+  constructor(error, source, name = "MacroInvocationError") {
     // If the error is not a SyntaxError, with a location property then
     // just return it instead of creating a wrapper object
     if (error.name !== "SyntaxError" || error.location === undefined) {
@@ -128,7 +137,7 @@ class MacroInvocationError extends SourceCodeError {
     }
 
     super(
-      "MacroInvocationError",
+      name,
       error,
       source,
       error.location.start.line,
@@ -144,9 +153,9 @@ class MacroInvocationError extends SourceCodeError {
  * macro in the HTML document, which it determines from the token argument.
  */
 class MacroNotFoundError extends SourceCodeError {
-  constructor(error, source, token) {
+  constructor(error, source, token, name = "MacroNotFoundError") {
     super(
-      "MacroNotFoundError",
+      name,
       error,
       source,
       token.location.start.line,
@@ -162,9 +171,9 @@ class MacroNotFoundError extends SourceCodeError {
  * macro in the HTML document and also includes the underlying error message.
  */
 class MacroCompilationError extends SourceCodeError {
-  constructor(error, source, token) {
+  constructor(error, source, token, name = "MacroCompilationError") {
     super(
-      "MacroCompilationError",
+      name,
       error,
       source,
       token.location.start.line,
@@ -181,9 +190,15 @@ class MacroCompilationError extends SourceCodeError {
  * from the underlying runtime error.
  */
 class MacroExecutionError extends SourceCodeError {
-  constructor(error, source, token, fatal = true) {
+  constructor(
+    error,
+    source,
+    token,
+    fatal = true,
+    name = "MacroExecutionError"
+  ) {
     super(
-      "MacroExecutionError",
+      name,
       error,
       source,
       token.location.start.line,
@@ -198,9 +213,14 @@ class MacroExecutionError extends SourceCodeError {
  * A MacroRedirectedLinkError is a special case of MacroExecutionError.
  */
 class MacroRedirectedLinkError extends MacroExecutionError {
-  constructor(error, source, token, redirectInfo) {
-    super(error, source, token, false);
-    this.name = "MacroRedirectedLinkError";
+  constructor(
+    error,
+    source,
+    token,
+    redirectInfo,
+    name = "MacroRedirectedLinkError"
+  ) {
+    super(error, source, token, false, name);
     this.macroSource = source.slice(
       token.location.start.offset,
       token.location.end.offset
@@ -213,9 +233,8 @@ class MacroRedirectedLinkError extends MacroExecutionError {
  * A MacroBrokenLinkError is a special case of MacroExecutionError.
  */
 class MacroBrokenLinkError extends MacroExecutionError {
-  constructor(error, source, token) {
-    super(error, source, token, false);
-    this.name = "MacroBrokenLinkError";
+  constructor(error, source, token, name = "MacroBrokenLinkError") {
+    super(error, source, token, false, name);
     this.macroSource = source.slice(
       token.location.start.offset,
       token.location.end.offset
@@ -224,9 +243,8 @@ class MacroBrokenLinkError extends MacroExecutionError {
 }
 
 class MacroWrongXRefError extends MacroBrokenLinkError {
-  constructor(error, source, token) {
-    super(error, source, token);
-    this.name = "MacroWrongXRefError";
+  constructor(error, source, token, name = "MacroWrongXRefError") {
+    super(error, source, token, name);
   }
 }
 
@@ -234,9 +252,8 @@ class MacroWrongXRefError extends MacroBrokenLinkError {
  * A MacroDeprecatedError is a special case of MacroExecutionError.
  */
 class MacroDeprecatedError extends MacroExecutionError {
-  constructor(error, source, token) {
-    super(error, source, token, false);
-    this.name = "MacroDeprecatedError";
+  constructor(error, source, token, name = "MacroDeprecatedError") {
+    super(error, source, token, false, name);
     this.macroSource = source.slice(
       token.location.start.offset,
       token.location.end.offset
@@ -248,9 +265,8 @@ class MacroDeprecatedError extends MacroExecutionError {
  * A MacroLiveSampleError is a special case of MacroExecutionError.
  */
 class MacroLiveSampleError extends MacroExecutionError {
-  constructor(error, source, token) {
-    super(error, source, token, true);
-    this.name = "MacroLiveSampleError";
+  constructor(error, source, token, name = "MacroLiveSampleError") {
+    super(error, source, token, true, name);
     this.macroSource = source.slice(
       token.location.start.offset,
       token.location.end.offset
@@ -263,9 +279,8 @@ class MacroLiveSampleError extends MacroExecutionError {
  * based on optimistically combining names to make URLs.
  */
 class MacroPagesError extends MacroExecutionError {
-  constructor(error, source, token) {
-    super(error, source, token, false);
-    this.name = "MacroPagesError";
+  constructor(error, source, token, name = "MacroPagesError") {
+    super(error, source, token, false, name);
     this.macroSource = source.slice(
       token.location.start.offset,
       token.location.end.offset

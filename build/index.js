@@ -389,7 +389,7 @@ async function buildDocument(document, documentOptions = {}) {
         // The 'flaws' array don't have everything we need from the
         // kumascript rendering, so we "beef it up" to have convenient
         // attributes needed.
-        doc.flaws.macros = flaws.map((flaw, i) => {
+        doc.flaws.macros = flaws.map((flaw) => {
           let fixable = false;
           let suggestion = null;
           if (flaw.name === "MacroDeprecatedError") {
@@ -405,9 +405,8 @@ async function buildDocument(document, documentOptions = {}) {
               flaw.redirectInfo.suggested
             );
           }
-          const id = `macro${i}`;
           const explanation = flaw.error.message;
-          return Object.assign({ id, fixable, suggestion, explanation }, flaw);
+          return Object.assign({ fixable, suggestion, explanation }, flaw);
         });
       }
     }
