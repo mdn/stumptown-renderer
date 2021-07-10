@@ -15,6 +15,7 @@ function url_test(from, to, { statusCode = 301 } = {}) {
         followRedirect: false,
         throwHttpErrors: false,
       });
+      console.log(serverURL(f), res.statusCode);
       expect(res.statusCode).toBe(statusCode);
       if (to) {
         expect((res.headers.location || "").toLowerCase()).toBe(
@@ -1189,6 +1190,10 @@ const RETIRED_LOCALE_URLS = [].concat(
   })
 );
 
+const ARCHIVED_TO_GITHUB_URLS = [].concat(
+  url_test("/en-US/docs/Mozilla/Projects/NSS/Foo", "xxx", { statusCode: 302 })
+);
+
 const MISC_REDIRECT_URLS = [].concat(
   url_test("/fr/account", "/fr/settings", { statusCode: 302 }),
   url_test("/en-US/account", "/en-US/settings", { statusCode: 302 }),
@@ -1356,6 +1361,11 @@ describe("locale alias redirects", () => {
 
 describe("retired locale redirects", () => {
   for (const [url, t] of RETIRED_LOCALE_URLS) {
+    it(url, t);
+  }
+});
+describe("archived to GitHub", () => {
+  for (const [url, t] of ARCHIVED_TO_GITHUB_URLS) {
     it(url, t);
   }
 });
