@@ -1,6 +1,10 @@
 import React, { useContext } from "react";
 import type bcd from "@mdn/browser-compat-data/types";
-import { BrowserInfoContext, BrowserName } from "./browser-info";
+import {
+  BrowserInfoContext,
+  BrowserName,
+  BrowserPreviewName,
+} from "./browser-info";
 import { asList, getFirst, isTruthy } from "./utils";
 
 // Yari builder will attach extra keys from the compat data
@@ -39,6 +43,8 @@ function getSupportClassName(
   let className;
   if (version_added === null) {
     className = "unknown";
+  } else if (version_added === "preview") {
+    className = "preview";
   } else if (version_added) {
     className = "yes";
     if (version_removed || (flags && flags.length)) {
@@ -93,7 +99,10 @@ function StatusIcons({ status }: { status: bcd.StatusBlock }) {
   );
 }
 
-function labelFromString(version: string | boolean | null | undefined) {
+function labelFromString(
+  version: string | boolean | null | undefined,
+  browser: bcd.BrowserNames
+) {
   if (typeof version !== "string") {
     return <>{"?"}</>;
   }
@@ -102,11 +111,20 @@ function labelFromString(version: string | boolean | null | undefined) {
   if (version.startsWith("≤")) {
     return <>{version.slice(1)}</>;
   }
+  if (version === "preview") {
+    return <BrowserPreviewName id={browser} />;
+  }
   return <>{version}</>;
 }
 
 const CellText = React.memo(
-  ({ support }: { support: bcd.SupportStatement | undefined }) => {
+  ({
+    support,
+    browser,
+  }: {
+    support: bcd.SupportStatement | undefined;
+    browser: bcd.BrowserNames;
+  }) => {
     const currentSupport = getFirst(support);
 
     const added = currentSupport && currentSupport.version_added;
@@ -114,7 +132,10 @@ const CellText = React.memo(
 
     let status:
       | { isSupported: "unknown" }
-      | { isSupported: "no" | "yes" | "partial"; label?: React.ReactNode };
+      | {
+          isSupported: "no" | "yes" | "partial" | "preview";
+          label?: React.ReactNode;
+        };
 
     switch (added) {
       case null:
@@ -126,8 +147,11 @@ const CellText = React.memo(
       case false:
         status = { isSupported: "no" };
         break;
+      case "preview":
+        status = { isSupported: "preview" };
+        break;
       default:
-        status = { isSupported: "yes", label: labelFromString(added) };
+        status = { isSupported: "yes", label: labelFromString(added, browser) };
         break;
     }
 
@@ -136,15 +160,18 @@ const CellText = React.memo(
         isSupported: "no",
         label: (
           <>
-            {labelFromString(added)}&#8202;&ndash;&#8202;
-            {labelFromString(removed)}
+            {labelFromString(added, browser)}&#8202;&ndash;&#8202;
+            {labelFromString(removed, browser)}
           </>
         ),
       };
     } else if (currentSupport && currentSupport.partial_implementation) {
       status = {
         isSupported: "partial",
-        label: typeof added === "string" ? labelFromString(added) : "Partial",
+        label:
+          typeof added === "string"
+            ? labelFromString(added, browser)
+            : "Partial",
       };
     }
 
@@ -164,6 +191,11 @@ const CellText = React.memo(
       case "no":
         title = "No support";
         label = status.label || "No";
+        break;
+
+      case "preview":
+        title = "Preview browser support";
+        label = <BrowserPreviewName id={browser} />;
         break;
 
       case "unknown":
@@ -274,7 +306,12 @@ function getNotes(
         item.version_removed
           ? {
               iconName: "footnote",
-              label: `Removed in version ${item.version_removed} and later`,
+              label: (
+                <>
+                  Removed in {labelFromString(item.version_removed, browser)}{" "}
+                  and later
+                </>
+              ),
             }
           : null,
         item.partial_implementation
@@ -306,11 +343,17 @@ function getNotes(
               (note) => ({ iconName: "footnote", label: note })
             )
           : null,
+        item.version_added === "preview"
+          ? {
+              iconName: "footnote",
+              label: "Preview browser support",
+            }
+          : null,
         // If we encounter nothing else than the required `version_added` and
         // `release_date` properties, assume full support
         Object.keys(item).filter(
           (x) => !["version_added", "release_date"].includes(x)
-        ).length === 0
+        ).length === 0 && item.version_added !== "preview"
           ? {
               iconName: "footnote",
               label: "Full support",
@@ -330,7 +373,7 @@ function getNotes(
                   item
                 )} bc-supports`}
               >
-                <CellText support={item} />
+                <CellText support={item} browser={browser} />
                 <CellIcons support={item} />
               </dt>
               {supportNotes.map(({ iconName, label }, i) => {
@@ -401,7 +444,7 @@ function CompatCell({
         <span className="bc-browser-name">
           <BrowserName id={browser} />
         </span>
-        <CellText {...{ support }} />
+        <CellText {...{ support }} browser={browser} />
         <CellIcons support={support} />
         {hasNotes && (
           <button

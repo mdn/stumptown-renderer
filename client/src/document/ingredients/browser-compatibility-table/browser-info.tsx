@@ -12,3 +12,11 @@ export function BrowserName({ id }: { id: bcd.BrowserNames }) {
   }
   return <>{browserInfo[id].name}</>;
 }
+
+export function BrowserPreviewName({ id }: { id: bcd.BrowserNames }) {
+  const browserInfo = useContext(BrowserInfoContext);
+  if (!browserInfo) {
+    throw new Error("Missing browser info");
+  }
+  return <>{browserInfo[id].preview_name}</>;
+}
