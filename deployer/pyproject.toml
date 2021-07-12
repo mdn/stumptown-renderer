@@ -9,7 +9,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^7.1.2"
+click = "^8.0.1"
 boto3 = "^1.17.109"
 python-decouple = "^3.4"
 requests = {extras = ["security"], version = "^2.25.0"}
