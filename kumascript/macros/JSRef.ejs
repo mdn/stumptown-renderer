@@ -19,8 +19,6 @@ var text = {
     'Methods': mdn.getLocalString(commonl10n, 'Methods'),
     'Inheritance': mdn.getLocalString(commonl10n, 'Inheritance'),
     'Related': mdn.getLocalString(commonl10n, 'Related_pages_wo_group'),
-    'translate': mdn.getLocalString(commonl10n, '[Translate]'),
-    'translationCTA': mdn.getLocalString(commonl10n, 'TranslationCTA'),
 };
 
 
@@ -195,9 +193,7 @@ function buildSublist(pages, title, opened) {
     if (slug == aPage.slug) {
         result += '<em><code>' + aPage.title + '</code></em>'
     } else {
-        result += '<a href="'
-               + url
-               + '"><code>' + title + '</code></a>';
+        result += web.smartLink(url, null, `<code>${title}</code>`, aPage.slug, slug_stdlib, "JSRef");
     }
 
     if (rtlLocales.indexOf(locale) != -1) {
@@ -226,36 +222,39 @@ var len = 0;
 // Output
 
 output  = '<section class="Quick_links" id="Quick_Links"><ol>';
-output += '<li><strong><a href="'+slug_stdlib+'">'+text['stdlib']+'</a></strong></li>';
+const link = web.smartLink(slug_stdlib, null, text['stdlib'], slug_stdlib, slug_stdlib, "JSRef");
+output += `<li><strong>${link}</strong></li>`;
 
-    for (object in result) {
-        len++;
-        resultTitle      = result[object].title || '';
-        resultProperties = result[object].properties || '';
-        resultMethods    = result[object].methods || '';
-        resultOpen       = result[object].defaultOpened || '';
+for (object in result) {
+    len++;
+    resultTitle      = result[object].title || '';
+    resultProperties = result[object].properties || '';
+    resultMethods    = result[object].methods || '';
+    resultOpen       = result[object].defaultOpened || '';
 
-        if (len == 2) {
-          output += '<li><strong>'+text['Inheritance']+'</strong></li>';
-        }
-
-        output += '<li><strong><a href="'+slug_stdlib + '/' + resultTitle +'"><code>'+resultTitle+'</code></a></strong></li>';
-
-        if (resultProperties.length > 0) {
-          output += buildSublist(resultProperties, text['Properties'], resultOpen);
-        }
-        if (resultMethods.length > 0) {
-          output += buildSublist(resultMethods, text['Methods'], resultOpen);
-        }
-
-        if (len == 1 && group.length > 0) {
-            output += '<li><strong>'+text['Related']+'</strong></li>';
-            for (var i = 0; i < group.length; i++) {
-              output += '<li><strong><a href="'+ slug_stdlib + '/' + group[i].replace(".", "/") +'"><code>'+group[i]+'</code></a></strong></li>';
-            }
-        }
-
+    if (len == 2) {
+        output += '<li><strong>'+text['Inheritance']+'</strong></li>';
     }
+
+    const link = web.smartLink(`${slug_stdlib}/${resultTitle}`, null, `<code>${resultTitle}</code>`, null, slug_stdlib, "JSRef");
+    output += `<li><strong>${link}</strong></li>`;
+
+    if (resultProperties.length > 0) {
+        output += buildSublist(resultProperties, text['Properties'], resultOpen);
+    }
+    if (resultMethods.length > 0) {
+        output += buildSublist(resultMethods, text['Methods'], resultOpen);
+    }
+
+    if (len == 1 && group.length > 0) {
+        output += '<li><strong>'+text['Related']+'</strong></li>';
+        for (var i = 0; i < group.length; i++) {
+            const link = web.smartLink(`${slug_stdlib}/${group[i].replace(".", "/")}`, null, `<code>${group[i]}</code>`, null, slug_stdlib, "JSRef");
+            output += `<li><strong>${link}</strong></li>`;
+        }
+    }
+
+}
 
 output += '</ol></section>';
 }
