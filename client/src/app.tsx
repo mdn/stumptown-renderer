@@ -254,7 +254,7 @@ export function App(appProps) {
             />
             {ENABLE_PLUS && (
               <Route
-                path="/plus"
+                path="/plus/*"
                 element={
                   <StandardLayout>
                     <Plus />

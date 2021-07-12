@@ -1,0 +1,51 @@
+@import "~@mdn/minimalist/sass/vars/color-palette";
+
+@keyframes fadeOutNearly {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.plus {
+  .bookmarks {
+    h3 {
+      margin-bottom: 40px;
+    }
+    p.nothing-bookmarked {
+      margin: 100px 50px;
+      font-style: italic;
+    }
+
+    div.bookmark {
+      margin-bottom: 20px;
+      ol.breadcrumbs {
+        margin-bottom: 0;
+        list-style: none;
+
+        li {
+          display: inline-block;
+          margin: 0 3px;
+
+          a {
+            &:link,
+            &:visited {
+              color: $neutral-100;
+            }
+          }
+        }
+      }
+    }
+    div.bookmark.doomed {
+      // Hey Schalk! How do I get it to stay at 'opacity:0.1' after the animation
+      // has run for its 0.5s?
+      animation: fadeOutNearly 0.5s ease-out;
+    }
+
+    .notecard.unbookmark {
+      float: right;
+    }
+  }
+}
