@@ -1,62 +1,127 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, {
+  Suspense,
+  lazy,
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+} from "react";
+import { useSearchParams } from "react-router-dom";
 
-import { AUTOCOMPLETE_SEARCH_WIDGET } from "../../../constants";
 import { useLocale } from "../../../hooks";
 
 import "./index.scss";
 
-// The temporary solution... See below around the BasicSearchWidget component.
 import "./basic-search-widget.scss";
-// import { SearchNavigateWidget } from "../../../search";
-const LazySearchNavigateWidget = lazy(() => import("./lazy-search-widget"));
+import {
+  getPlaceholder,
+  SearchProps,
+  useFocusOnSlash,
+} from "../../../search-utils";
+const LazySearchNavigateWidget = lazy(() => import("../../../search"));
+
+function useQueryParamState() {
+  const [searchParams] = useSearchParams();
+  const queryState = searchParams.get("q") || "";
+  const [value, setValue] = useState(queryState);
+
+  // The site-search page might trigger an update to the current
+  // `?q=...` value and if that happens we want to be reflected in the search inputs
+  React.useEffect(() => {
+    setValue(queryState);
+  }, [setValue, queryState]);
+
+  return [value, setValue] as const;
+}
 
 export function Search(props) {
-  const [useAutocompleteSearchWidget, setUseAutocompleteSearchWidget] =
-    useState(false);
+  const [value, setValue] = useQueryParamState();
+  const [isFocused, setIsFocused] = useState(false);
+  const [defaultSelection, setDefaultSelection] = useState([0, 0] as const);
+  const [shouldUpgradeSearch, setShouldUpgradeSearch] = useState(false);
+
+  const searchProps = useMemo(
+    () => ({
+      inputValue: value,
+      onChangeInputValue: (value) => setValue(value),
+      isFocused,
+      onChangeIsFocused: (isFocused) => setIsFocused(isFocused),
+      defaultSelection,
+      onChangeSelection: (selection) => setDefaultSelection(selection),
+      onMouseEnter: () => setShouldUpgradeSearch(true),
+    }),
+    [value, isFocused, defaultSelection, setValue]
+  );
+
   useEffect(() => {
-    if (AUTOCOMPLETE_SEARCH_WIDGET) {
-      setUseAutocompleteSearchWidget(true);
+    if (isFocused) {
+      setShouldUpgradeSearch(true);
     }
-  }, []);
+  }, [isFocused, setShouldUpgradeSearch]);
 
   return (
     <div className="header-search">
-      {/* See the code comment next to the <BasicSearchWidget> component */}
-      {useAutocompleteSearchWidget ? (
-        <Suspense fallback={<BasicSearchWidget />}>
-          <LazySearchNavigateWidget {...props} />
+      {shouldUpgradeSearch ? (
+        <Suspense fallback={<BasicSearchWidget {...searchProps} />}>
+          <LazySearchNavigateWidget {...searchProps} {...props} />
         </Suspense>
       ) : (
-        <BasicSearchWidget />
+        <BasicSearchWidget {...searchProps} />
       )}
     </div>
   );
 }
 
-// This is a TEMPORARY solution.
-// In the Yari1 launch we want to disable the auto-complete search that Yari has.
-// Instead we want it to look and behave just like the search widget you get
-// on the Kuma pages.
-// The general idea is that we keep it like this for the period of time when
-// the home page and site-search pages are still rendered in Kuma.
-// Once all pages come from Yari, we'll get rid of this.
-// For more context and discussion see https://github.com/mdn/yari/issues/1663
-
-export function BasicSearchWidget() {
+export function BasicSearchWidget({
+  isFocused,
+  onChangeIsFocused,
+  inputValue,
+  onChangeInputValue,
+  onChangeSelection,
+  onMouseEnter,
+}: SearchProps & {
+  onChangeSelection: (selection: [number, number]) => void;
+  onMouseEnter: () => void;
+}) {
   const locale = useLocale();
+  const inputRef = useRef<null | HTMLInputElement>(null);
+
+  useFocusOnSlash(inputRef);
+
   return (
-    <form action={`/${locale}/search`} className="search-form" role="search">
+    <form
+      action={`/${locale}/search`}
+      className="search-form search-widget"
+      role="search"
+    >
       <label htmlFor="main-q" className="visually-hidden">
         Search MDN
       </label>
       <input
+        ref={inputRef}
         type="search"
         name="q"
         id="main-q"
         className="search-input-field"
-        placeholder="Search MDN"
+        placeholder={getPlaceholder(isFocused)}
         pattern="(.|\s)*\S(.|\s)*"
         required
+        value={inputValue}
+        onMouseEnter={onMouseEnter}
+        onChange={(e) => {
+          onChangeInputValue(e.target.value);
+        }}
+        autoFocus={isFocused}
+        onFocus={() => onChangeIsFocused(true)}
+        onBlur={() => onChangeIsFocused(false)}
+        onSelect={(event) => {
+          if (event.target instanceof HTMLInputElement) {
+            onChangeSelection([
+              event.target.selectionStart!,
+              event.target.selectionEnd!,
+            ]);
+          }
+        }}
       />
       <input
         type="submit"

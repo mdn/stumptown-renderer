@@ -21,6 +21,7 @@ describe("Autocomplete search", () => {
     await expect(page).toMatch("<foo>: A test tag");
     // There's only 1 and this clicks on the first one anyway.
     await expect(page).toClick("div.result-item");
+    await page.waitForNavigation();
     await expect(page).toMatchElement("h1", { text: "<foo>: A test tag" });
     // Should have been redirected too...
     // Note! It's important that this happens *after* the `.toMatchElement`
@@ -33,7 +34,7 @@ describe("Autocomplete search", () => {
     await page.goto(testURL("/"));
     await expect(page).toFill(SEARCH_SELECTOR, "gooblyg00k");
     await expect(page).toMatchElement(".nothing-found", {
-      text: "nothing found",
+      text: "No document titles found",
     });
   });
 
@@ -42,11 +43,12 @@ describe("Autocomplete search", () => {
     await expect(page).toFill(SEARCH_SELECTOR, "/");
     await expect(page).toMatch("Fuzzy searching by URI");
     await expect(page).not.toMatchElement(".nothing-found", {
-      text: "nothing found",
+      text: "No document titles found",
     });
     await expect(page).toFill(SEARCH_SELECTOR, "/wboo");
     await expect(page).toMatch("<foo>: A test tag");
     await expect(page).toClick("div.result-item");
+    await page.waitForNavigation();
     await expect(page).toMatchElement("h1", { text: "<foo>: A test tag" });
   });
 
@@ -54,7 +56,7 @@ describe("Autocomplete search", () => {
     await page.goto(testURL("/"));
     await expect(page).toFill(SEARCH_SELECTOR, "/gooblygook");
     await expect(page).toMatchElement(".nothing-found", {
-      text: "nothing found",
+      text: "No document titles found",
     });
   });
 

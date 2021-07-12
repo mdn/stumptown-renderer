@@ -32,4 +32,8 @@ input.search-input-field {
   right: 10px;
   top: 10px;
   width: 21px;
+
+  &:active {
+    background-color: transparent;
+  }
 }
