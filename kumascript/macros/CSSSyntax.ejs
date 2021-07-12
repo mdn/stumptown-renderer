@@ -320,7 +320,7 @@ async function formatSyntax(rawSyntax) {
             }
 
             var output = "<a href=\"/" + locale + "/docs/CSS/" +
-                s_syntax_value_definition + "#" + operator.anchor +
+                s_syntax_value_definition + "#" + operator.anchor.toLowerCase() +
                 "\" title=\"" + operator.title + "\">" + linkText + "</a>";
             if (linkText === "|") {
                 output = " " + output + " ";
