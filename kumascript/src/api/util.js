@@ -67,9 +67,68 @@ function safeDecodeURIComponent(text) {
   }
 }
 
+const findSectionStart = ($, sectionID) =>
+  $(`#${cssesc(sectionID, { isIdentifier: true })}`);
+
+const hasHeading = ($, sampleID) =>
+  !sampleID ? false : findSectionStart($, sampleID).length > 0;
+
+function findTopLevelParent($el) {
+  while ($el.siblings(":header").length == 0 && $el.parent().length > 0) {
+    $el = $el.parent();
+  }
+  return $el;
+}
+
+const getLevel = ($header) => parseInt($header[0].name[1], 10);
+
+const getHigherHeaderSelectors = (upTo) =>
+  Array.from({ length: upTo }, (_, i) => "h" + (i + 1)).join(", ");
+
+function* collectLevels($el) {
+  // Initialized to 7 so that we pick up the lowest heading level which is <h6>
+  let level = 7;
+  let $prev = $el;
+  while (level !== 1) {
+    const nextHigherLevel = getHigherHeaderSelectors(level - 1);
+    const $header = $prev.prevAll(nextHigherLevel).first();
+    if ($header.length == 0) {
+      return;
+    }
+    level = getLevel($header);
+    $prev = $header;
+    yield $header.add($header.nextUntil(nextHigherLevel));
+  }
+}
+
+function collectClosestCode($start) {
+  const $el = findTopLevelParent($start);
+  for (const $level of collectLevels($el)) {
+    const pairs = LIVE_SAMPLE_PARTS.map((part) => {
+      const selector = `.${part}, pre[class*="brush:${part}"], pre[class*="${part};"]`;
+      const $filtered = $level.find(selector).add($level.filter(selector));
+      return [
+        part,
+        $filtered
+          .map((i, element) => cheerio(element).text())
+          .get()
+          .join("\n"),
+      ];
+    });
+    if (pairs.some(([, code]) => !!code)) {
+      $start.prop("title", $level.first(":header").text());
+      return Object.fromEntries(pairs);
+    }
+  }
+  return null;
+}
+
 class HTMLTool {
   constructor(html, pathDescription) {
-    this.$ = cheerio.load(html, { decodeEntities: true });
+    this.$ =
+      typeof html == "string"
+        ? cheerio.load(html, { decodeEntities: true })
+        : html;
     this.pathDescription = pathDescription;
   }
 
@@ -139,7 +198,7 @@ class HTMLTool {
     // Kuma looks for the first HTML tag of a limited set of section tags with ANY
     // attribute equal to the "sectionID", but in practice it's always an "id" attribute,
     // so let's simplify this as well as make it much faster.
-    const sectionStart = $(`#${cssesc(sectionID, { isIdentifier: true })}`);
+    const sectionStart = findSectionStart($, sectionID);
     if (!sectionStart.length) {
       let errorMessage = `unable to find an HTML element with an "id" of "${sectionID}" within ${this.pathDescription}`;
       const hasMoreThanAscii = [...sectionID].some(
@@ -182,33 +241,44 @@ class HTMLTool {
   }
 
   extractLiveSampleObject(sampleID) {
-    const result = Object.create(null);
-    const sample = this.getSection(sampleID);
-    // We have to wrap the collection of elements from the section
-    // we've just acquired because we're going to search among all
-    // descendants and we want to include the elements themselves
-    // as well as their descendants.
-    const $ = cheerio.load(`<div>${cheerio.html(sample)}</div>`);
-    for (const part of LIVE_SAMPLE_PARTS) {
-      const src = $(
-        `.${part},pre[class*="brush:${part}"],pre[class*="${part};"]`
-      )
-        .map((i, element) => {
-          return $(element).text();
-        })
-        .get()
-        .join("\n");
-      // The string replacements below have been carried forward from Kuma:
-      //   * Bugzilla 819999: &nbsp; gets decoded to \xa0, which trips up CSS.
-      //   * Bugzilla 1284781: &nbsp; is incorrectly parsed on embed sample.
-      result[part] = src ? src.replace(/\u00a0/g, " ") : null;
-    }
-    if (!LIVE_SAMPLE_PARTS.some((part) => result[part])) {
-      throw new KumascriptError(
-        `unable to find any live code samples for "${sampleID}" within ${this.pathDescription}`
+    const sectionID = sampleID.substr("frame_".length);
+    if (hasHeading(this.$, sectionID)) {
+      const result = Object.create(null);
+      const sample = this.getSection(sectionID);
+      // We have to wrap the collection of elements from the section
+      // we've just acquired because we're going to search among all
+      // descendants and we want to include the elements themselves
+      // as well as their descendants.
+      const $ = cheerio.load(`<div>${cheerio.html(sample)}</div>`);
+      for (const part of LIVE_SAMPLE_PARTS) {
+        const src = $(
+          `.${part}, pre[class*="brush:${part}"], pre[class*="${part};"]`
+        )
+          .map((i, element) => $(element).text())
+          .get()
+          .join("\n");
+        // The string replacements below have been carried forward from Kuma:
+        //   * Bugzilla 819999: &nbsp; gets decoded to \xa0, which trips up CSS.
+        //   * Bugzilla 1284781: &nbsp; is incorrectly parsed on embed sample.
+        result[part] = src ? src.replace(/\u00a0/g, " ") : null;
+      }
+      if (!LIVE_SAMPLE_PARTS.some((part) => result[part])) {
+        throw new KumascriptError(
+          `unable to find any live code samples for "${sampleID}" within ${this.pathDescription}`
+        );
+      }
+      return result;
+    } else {
+      const result = collectClosestCode(
+        this.$("#" + cssesc(sampleID, { isIdentifier: true }))
       );
+      if (!result) {
+        throw new KumascriptError(
+          `unable to find any live code samples for "${sampleID}" within ${this.pathDescription}`
+        );
+      }
+      return result;
     }
-    return result;
   }
 
   html() {

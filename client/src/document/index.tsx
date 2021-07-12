@@ -70,6 +70,7 @@ export function Document(props /* TODO: define a TS interface for this */) {
           ? props.doc
           : null,
       revalidateOnFocus: CRUD_MODE,
+      refreshInterval: CRUD_MODE ? 500 : 0,
     }
   );
 

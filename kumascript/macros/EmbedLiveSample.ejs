@@ -14,7 +14,7 @@
 //
 // See also : LiveSampleLink
 
-var sampleId = $0;
+var sampleId = $0 || $token.location.start.offset;
 var width = $1;
 var height = $2;
 var screenshotUrl = $3;
@@ -80,5 +80,6 @@ if (width) { %> width="<%= width %>"<% }
 if (height) { %> height="<%= height %>"<% }
 %> src="<%- url %>"<%
 if (allowedFeatures) { %> allow="<%= allowedFeatures %>"<% }
+if ($token) { %> data-token="<%= JSON.stringify($token) %>"<% }
 %>></iframe><%
 if (hasScreenshot) { %></td></tr></tbody></table><% } %>

@@ -159,7 +159,7 @@ class Environment {
 
   // Get a customized environment object that is specific to a single
   // macro on a page by including the arguments to be passed to that macro.
-  getExecutionContext(args) {
+  getExecutionContext(args, token = null) {
     const context = Object.create(this.prototypeEnvironment);
 
     // Make a defensive copy of the arguments so that macros can't
@@ -187,6 +187,10 @@ class Environment {
     for (let i = args.length; i < 10; i++) {
       context[`$${i}`] = "";
     }
+
+    // Position of the macro inside of the source, which we need
+    // to identify EmbedLiveSample macros which do not receive an ID
+    context["$token"] = token;
 
     return context;
   }

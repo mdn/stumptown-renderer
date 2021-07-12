@@ -2,7 +2,6 @@ const fs = require("fs");
 const path = require("path");
 
 const cheerio = require("cheerio");
-const glob = require("glob");
 const sizeOf = require("image-size");
 
 const buildRoot = path.join("..", "client", "build");
@@ -1505,8 +1504,15 @@ test("/Web/Embeddable should have 3 valid live samples", () => {
   const { doc } = JSON.parse(fs.readFileSync(jsonFile));
   expect(Object.keys(doc.flaws).length).toBe(0);
 
-  const found = glob.sync(path.join(builtFolder, "_sample_.*.html"));
-  expect(found.length).toBe(3);
+  const builtFiles = fs.readdirSync(path.join(builtFolder));
+  expect(
+    builtFiles
+      .filter((f) => f.includes("_sample_."))
+      .map((f) => {
+        const startOffset = "_sample_.".length;
+        return f.substr(startOffset, f.length - startOffset - ".html".length);
+      })
+  ).toEqual(expect.arrayContaining(["colorpicker_tool", "keyboard", "meter"]));
 });
 
 test("headings with HTML should be rendered as HTML", () => {

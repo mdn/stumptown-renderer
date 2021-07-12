@@ -11,7 +11,7 @@ const info = require("./src/info.js");
 const { render: renderMacros } = require("./src/render.js");
 const {
   getLiveSampleIDs,
-  buildLiveSamplePage,
+  buildLiveSamplePages,
   LiveSampleError,
 } = require("./src/live-sample.js");
 const { HTMLTool } = require("./src/api/util.js");
@@ -114,7 +114,7 @@ const renderFromURL = async (
 };
 
 module.exports = {
-  buildLiveSamplePage,
+  buildLiveSamplePages,
   getLiveSampleIDs,
   LiveSampleError,
   render: renderFromURL,

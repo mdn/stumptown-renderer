@@ -299,19 +299,20 @@ async function buildDocument(document, documentOptions = {}) {
 
   doc.flaws = {};
 
-  let renderedHtml = "";
-  let flaws = [];
+  let $;
   const liveSamples = [];
 
   if (doc.isArchive) {
     if (document.isMarkdown) {
       throw new Error("Markdown not supported for archived content");
     }
-    renderedHtml = document.rawBody;
+    $ = cheerio.load(`<div id="_body">${document.rawBody}</div>`);
   } else {
     if (options.clearKumascriptRenderCache) {
       renderKumascriptCache.reset();
     }
+    let renderedHtml;
+    let flaws;
     try {
       [renderedHtml, flaws] = await kumascript.render(document.url);
     } catch (error) {
@@ -331,19 +332,17 @@ async function buildDocument(document, documentOptions = {}) {
       throw error;
     }
 
-    const sampleIds = kumascript.getLiveSampleIDs(
-      document.metadata.slug,
+    $ = cheerio.load(`<div id="_body">${renderedHtml}</div>`);
+
+    const liveSamplePages = kumascript.buildLiveSamplePages(
+      document.url,
+      document.metadata.title,
+      $,
       document.rawBody
     );
-    for (const sampleIdObject of sampleIds) {
-      const liveSamplePage = kumascript.buildLiveSamplePage(
-        document.url,
-        document.metadata.title,
-        renderedHtml,
-        sampleIdObject
-      );
-      if (liveSamplePage.flaw) {
-        const flaw = liveSamplePage.flaw.updateFileInfo(fileInfo);
+    for (const { id, html, flaw } of liveSamplePages) {
+      if (flaw) {
+        flaw.updateFileInfo(fileInfo);
         if (flaw.name === "MacroLiveSampleError") {
           // As of April 2021 there are 0 pages in mdn/content that trigger
           // a MacroLiveSampleError. So we can be a lot more strict with en-US
@@ -361,12 +360,9 @@ async function buildDocument(document, documentOptions = {}) {
           }
         }
         flaws.push(flaw);
-        continue;
+      } else {
+        liveSamples.push({ id: id.toLowerCase(), html });
       }
-      liveSamples.push({
-        id: sampleIdObject.id.toLowerCase(),
-        html: liveSamplePage.html,
-      });
     }
 
     if (flaws.length) {
@@ -420,7 +416,9 @@ async function buildDocument(document, documentOptions = {}) {
   // its output with the `folder`.
   validateSlug(metadata.slug);
 
-  const $ = cheerio.load(`<div id="_body">${renderedHtml}</div>`);
+  // EmbedLiveSamples carry their token information to enrich flaw error
+  // messages, these should not be in the final output
+  $("[data-token]").removeAttr("data-token");
 
   // Kumascript rendering can't know about FLAW_LEVELS when it's building,
   // because injecting it there would cause a circular dependency.
@@ -610,25 +608,22 @@ async function buildLiveSamplePageFromURL(url) {
   if (!document) {
     throw new Error(`No document found for ${documentURL}`);
   }
-  // Convert the lower-case sampleID we extract from the incoming URL into
-  // the actual sampleID object with the properly-cased live-sample ID.
-  for (const sampleIDObject of kumascript.getLiveSampleIDs(
-    document.metadata.slug,
-    document.rawBody
-  )) {
-    if (sampleIDObject.id.toLowerCase() === sampleID) {
-      const liveSamplePage = kumascript.buildLiveSamplePage(
-        document.url,
-        document.metadata.title,
-        (await kumascript.render(document.url))[0],
-        sampleIDObject
-      );
-      if (liveSamplePage.flaw) {
-        throw new Error(liveSamplePage.flaw.toString());
-      }
-      return liveSamplePage.html;
+  const liveSamplePage = kumascript
+    .buildLiveSamplePages(
+      document.url,
+      document.metadata.title,
+      (await kumascript.render(document.url))[0],
+      document.rawBody
+    )
+    .find((page) => page.id.toLowerCase() == sampleID);
+
+  if (liveSamplePage) {
+    if (liveSamplePage.flaw) {
+      throw new Error(liveSamplePage.flaw.toString());
     }
+    return liveSamplePage.html;
   }
+
   throw new Error(`No live-sample "${sampleID}" found within ${documentURL}`);
 }
 
