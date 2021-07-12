@@ -36,6 +36,10 @@ a.new {
 .main-page-content {
   padding: math.div($base-spacing, 2) $base-spacing $base-spacing;
 
+  ul li {
+    margin-bottom: 8px;
+  }
+
   .code-example {
     position: relative;
 

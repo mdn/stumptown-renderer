@@ -19,6 +19,10 @@
 
   .on-github {
     margin-bottom: $base-spacing;
+
+    ul li {
+      margin-bottom: 8px;
+    }
   }
 
   .last-modified-date {

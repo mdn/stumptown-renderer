@@ -21,7 +21,8 @@
 
   select {
     display: inline-block;
-    margin-right: math.div($base-spacing, 4);
+    margin-right: math.div($base-spacing, 3);
+    margin-bottom: math.div($base-spacing, 3);
 
     @media #{$mq-tablet-and-up} {
       display: inline-block;
