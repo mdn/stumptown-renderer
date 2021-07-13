@@ -24,6 +24,7 @@ const {
 } = require("../content");
 const { buildDocument, gatherGitHistory, buildSPAs } = require("../build");
 const {
+  ALWAYS_ALLOW_ROBOTS,
   BUILD_OUT_ROOT,
   GOOGLE_ANALYTICS_ACCOUNT,
   GOOGLE_ANALYTICS_DEBUG,
@@ -31,6 +32,7 @@ const {
 const { runArchive } = require("./archive");
 const { runMakePopularitiesFile } = require("./popularities");
 const { runOptimizeClientBuild } = require("./optimize-client-build");
+const { runBuildRobotsTxt } = require("./build-robots-txt");
 const kumascript = require("../kumascript");
 
 const PORT = parseInt(process.env.SERVER_PORT || "5000");
@@ -772,6 +774,28 @@ if (Mozilla && !Mozilla.dntEnabled()) {
       } else {
         logger.info(chalk.yellow("No Google Analytics code file generated"));
       }
+    })
+  )
+
+  .command(
+    "build-robots-txt",
+    "Generate a robots.txt in the build root depending ALWAYS_ALLOW_ROBOTS"
+  )
+  .option("--outfile <path>", "name of the generated file", {
+    default: path.join(BUILD_OUT_ROOT, "robots.txt"),
+  })
+  .action(
+    tryOrExit(async ({ options, logger }) => {
+      const { outfile } = options;
+      await runBuildRobotsTxt(outfile);
+      logger.info(
+        chalk.yellow(
+          `Generated ${path.relative(
+            ".",
+            outfile
+          )} based on ALWAYS_ALLOW_ROBOTS=${ALWAYS_ALLOW_ROBOTS}`
+        )
+      );
     })
   )
 

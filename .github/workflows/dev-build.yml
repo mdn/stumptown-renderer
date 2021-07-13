@@ -136,10 +136,6 @@ jobs:
           # Same with the Speedcurve LUX
           BUILD_SPEEDCURVE_LUX_ID: 000000000
 
-          # Make sure every built page always has
-          # '<meta name="robots" content="noindex, nofollow">' nomatter what
-          # kind of document it is.
-          BUILD_ALWAYS_NO_ROBOTS: true
         run: |
           if [ ${{ github.event.inputs.archived_content }} == "true" ]; then
             echo "Will build mdn/archived-content too"

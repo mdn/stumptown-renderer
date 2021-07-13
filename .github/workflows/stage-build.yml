@@ -163,11 +163,6 @@ jobs:
           # https://speedcurve.com/mozilla-add-ons/mdn/settings/updated/#lux
           BUILD_SPEEDCURVE_LUX_ID: 108906238
 
-          # Make sure every built page always has
-          # '<meta name="robots" content="noindex, nofollow">' nomatter what
-          # kind of document it is.
-          BUILD_ALWAYS_NO_ROBOTS: true
-
           # This enables the Plus call-to-action banner and the Plus landing page
           REACT_APP_ENABLE_PLUS: true
 

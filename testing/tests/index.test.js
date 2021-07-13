@@ -1752,3 +1752,14 @@ test("built search-index.json (en-US)", () => {
   // an archived page should not be in there.
   expect(urlToTitle.has("/en-US/docs/XUL")).toBeFalsy();
 });
+
+test("the robots.txt file was created", () => {
+  const filePath = path.join(buildRoot, "robots.txt");
+  const text = fs.readFileSync(filePath, "utf-8");
+  // The content of robots file when it's in production mode is
+  // to ONLY say `Disallow: /api/`.
+  // When the robots file is for disallowing everything it
+  // will ONLY say `Disallow: /`.
+  expect(text).toContain("Disallow: /api/");
+  expect(text).not.toContain("Disallow: /\n");
+});

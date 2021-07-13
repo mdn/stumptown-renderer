@@ -166,6 +166,10 @@ jobs:
           # This enables the Plus call-to-action banner and the Plus landing page
           REACT_APP_ENABLE_PLUS: true
 
+          # The default is to always set no to robots. This deployment is the only
+          # exception in the world where we actually want to welcome robots.
+          BUILD_ALWAYS_ALLOW_ROBOTS: true
+
         run: |
           if [ ${{ env.BUILD_ARCHIVED_CONTENT }} == "true" ]; then
             echo "Will build mdn/archived-content too"

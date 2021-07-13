@@ -14,7 +14,7 @@
     "fiori:build": "cd client && build-storybook",
     "fiori:start": "cd client && start-storybook -p 6006",
     "md": "ts-node markdown/cli.ts",
-    "prepare-build": "yarn build:client && yarn build:ssr && yarn tool optimize-client-build && yarn tool google-analytics-code && yarn tool spas && yarn tool gather-git-history",
+    "prepare-build": "yarn build:client && yarn build:ssr && yarn tool optimize-client-build && yarn tool google-analytics-code && yarn tool spas && yarn tool gather-git-history && yarn tool build-robots-txt",
     "prettier-check": "prettier --check .",
     "prettier-format": "prettier --write .",
     "start": "(test -f client/build/index.html || yarn build:client) && (test -f ssr/dist/main.js || yarn build:ssr) && (test -d client/build/en-us/_spas || yarn tool spas) && nf -j Procfile.start start",
