@@ -80,7 +80,7 @@
     "loglevel": "^1.7.1",
     "lru-cache": "^6.0.0",
     "md5-file": "5.0.0",
-    "mdast-util-from-markdown": "^0.8.5",
+    "mdast-util-from-markdown": "^1.0.0",
     "mdast-util-phrasing": "^2.0.0",
     "mdn-data": "2.0.19",
     "open": "^8.2.1",
