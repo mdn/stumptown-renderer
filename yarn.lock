@@ -2616,10 +2616,10 @@
   resolved "https://registry.yarnpkg.com/@mdn/dinocons/-/dinocons-0.3.2.tgz#2afae74a31dba2de0f1436df9117e9827600cbf7"
   integrity sha512-0CusgBtQcb5EFfnSJ/AcYMMWbamUrYWdDrcQtfX4CCabr4Sfw9BkX55FoWZn8aVmhj4Np7DzNFm/W/3jf2LebQ==
 
-"@mdn/minimalist@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mdn/minimalist/-/minimalist-2.0.0.tgz#6f31ceae8a1146c2545d8b20829c4f5a8e6918c5"
-  integrity sha512-xmTSEKxtd/48Ov+K8iK5bhu2jdYzzTpprhdubZPPV1dZRxMxTGnXaX46vWal9Za0lcmOxr2S55L901vky62czg==
+"@mdn/minimalist@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@mdn/minimalist/-/minimalist-2.0.1.tgz#436bd58413d0f6740e39cced8a115ae70eb4f2f9"
+  integrity sha512-SprixtvDmOyZ05mTxgNsn0ffTiT7kSZYuwX0bAIe/4/mKiZF2FUGo1wMEaBdPNtNuDiLy/DpDB7ckmhDkTPqjA==
 
 "@mdx-js/loader@^1.6.22":
   version "1.6.22"
@@ -3575,10 +3575,10 @@
     resolve-from "^5.0.0"
     store2 "^2.12.0"
 
-"@stripe/stripe-js@^1.15.1":
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-1.15.1.tgz#a3809ecc5aa8a03bd261a2f970d11cfdcbf11c4f"
-  integrity sha512-yJiDGutlwu25iajCy51VRJeoH3UMs+s5qVIDGfmPUuFpZ+F6AJ9g9EFrsBNvHxAGBahQFMLlBdzlCVydhGp6tg==
+"@stripe/stripe-js@^1.16.0":
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-1.16.0.tgz#73bce24fb7f47d719caa6b151e58e49b4167d463"
+  integrity sha512-ZSHbiwTrISoaTbpercmYGuY7QTg7HxfFyNgbJBaYbwHWbzMhpEdGTsmMpaBXIU6iiqwEEDaIyD8O6yJ+H5DWCg==
 
 "@stylelint/postcss-css-in-js@^0.37.2":
   version "0.37.2"
@@ -5634,10 +5634,10 @@ browser-process-hrtime@^1.0.0:
   resolved "https://registry.yarnpkg.com/browser-process-hrtime/-/browser-process-hrtime-1.0.0.tgz#3c9b4b7d782c8121e56f10106d84c0d0ffc94626"
   integrity sha512-9o5UecI3GhkpM6DrXr69PblIuWxPKk9Y0jHBRhdocZ2y7YECBFCsHm79Pr3OyR2AvjhDkabFJaDJMYRazHgsow==
 
-browser-specs@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/browser-specs/-/browser-specs-2.1.0.tgz#9a00ed323f54cb0061e80aa00e06fa300360bc24"
-  integrity sha512-gw9xmHjNy0bYLp1SSubeN67vBmDXrb0+8Gk978zUdraxQ0Sw8dWsqhY/fHxOnMPqn8YfYpiVkgB05eUMPKgoJg==
+browser-specs@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/browser-specs/-/browser-specs-2.2.0.tgz#87725850446718ed2a6e440b756e32de032bce63"
+  integrity sha512-aCJWsEq/hpTYlwDhhxEUN/E9Jcfnt24PD0LmYrKy0Ml2gOV/f37sh6sbaU29Y3l4EfPwT1GhDnPP+/pa1n7leQ==
 
 browserify-aes@^1.0.0, browserify-aes@^1.0.4:
   version "1.2.0"
@@ -9019,10 +9019,10 @@ file-system-cache@^1.0.5:
     fs-extra "^0.30.0"
     ramda "^0.21.0"
 
-file-type@16.5.0:
-  version "16.5.0"
-  resolved "https://registry.yarnpkg.com/file-type/-/file-type-16.5.0.tgz#16a2626f3b33bac612f6e81e52216f3a7c8e12a2"
-  integrity sha512-OxgWA9tbL8N/WP00GD1z8O0MiwQKFyWRs1q+3FhjdvcGgKqwxcejyGWso3n4/IMU6DdwV+ARZ4A7TTnPkDcSiw==
+file-type@16.5.1:
+  version "16.5.1"
+  resolved "https://registry.yarnpkg.com/file-type/-/file-type-16.5.1.tgz#dd697dc5c3a2f4db63af746f38a6322e5e7bc6a5"
+  integrity sha512-Pi1G43smrCy82Q3be3sfKaeS5uHdfj905dP88YqhroG6TYbVY2ljTdDXeXqa6Cn5nOk6znOjWM2uZptA8vH/qQ==
   dependencies:
     readable-web-to-node-stream "^3.0.0"
     strtok3 "^6.0.3"
@@ -18587,10 +18587,10 @@ ts-loader@^8.1.0:
     micromatch "^4.0.0"
     semver "^7.3.4"
 
-ts-node@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.0.0.tgz#05f10b9a716b0b624129ad44f0ea05dac84ba3be"
-  integrity sha512-ROWeOIUvfFbPZkoDis0L/55Fk+6gFQNZwwKPLinacRl6tsxstTF1DbAcLKkovwnpKMVvOMHP1TIbnwXwtLg1gg==
+ts-node@^10.1.0:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.1.0.tgz#e656d8ad3b61106938a867f69c39a8ba6efc966e"
+  integrity sha512-6szn3+J9WyG2hE+5W8e0ruZrzyk1uFLYye6IGMBadnOzDh8aP7t8CbFpsfCiEx2+wMixAhjFt7lOZC4+l+WbEA==
   dependencies:
     "@tsconfig/node10" "^1.0.7"
     "@tsconfig/node12" "^1.0.7"

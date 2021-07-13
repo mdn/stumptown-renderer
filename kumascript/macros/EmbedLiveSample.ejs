@@ -23,6 +23,7 @@ var className = $5 || "sample-code-frame";
 var allowedFeatures = $6;
 
 var hasScreenshot = (screenshotUrl && (screenshotUrl.length > 0));
+var title = $0.replace(/[_]+/gm, " ");
 
 var MIN_HEIGHT = 60;
 // Forcibly make sure the height is at least `MIN_HEIGHT` pixels.
@@ -74,7 +75,7 @@ if (hasScreenshot) {
       %><td><%
 } // end hasScreenshot
 %><iframe class="<%= className %>"<%
-%> id="frame_<%= web.slugify(web.safeDecodeURIComponent(sampleId)) %>"<%
+%> title="<%= title %> sample" id="frame_<%= web.slugify(web.safeDecodeURIComponent(sampleId)) %>"<%
 if (width) { %> width="<%= width %>"<% }
 if (height) { %> height="<%= height %>"<% }
 %> src="<%- url %>"<%

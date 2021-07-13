@@ -259,13 +259,19 @@ function loadLocaleAndAdd(
   };
 }
 
-function add(locale, updatePairs, { fix = false, strict = false } = {}) {
+function add(
+  locale,
+  updatePairs,
+  { fix = false, strict = false, dry = false } = {}
+) {
   const localeLC = locale.toLowerCase();
   const { pairs, root } = loadLocaleAndAdd(localeLC, updatePairs, {
     fix,
     strict,
   });
-  save(path.join(root, localeLC), pairs);
+  if (!dry) {
+    save(path.join(root, localeLC), pairs);
+  }
 }
 
 function remove(locale, urls, { strict = false } = {}) {

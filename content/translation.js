@@ -67,6 +67,7 @@ const IMPORTANT_MACROS = new Map(
     "WebGLSidebar",
     "WebRTCSidebar",
     "languages",
+    "page",
   ].map((name) => [name.toLowerCase(), name])
 );
 

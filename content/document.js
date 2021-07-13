@@ -676,6 +676,7 @@ function remove(
   const docs = [slug, ...children.map(({ metadata }) => metadata.slug)];
 
   if (dry) {
+    Redirect.add(locale, [[url, redirect]], { dry });
     return docs;
   }
 
