@@ -263,6 +263,15 @@ a.new {
     }
   }
 
+  /*
+   * Reference links inside of code blocks
+   */
+  .code-reference-link {
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.4);
+    user-select: text;
+  }
+
   iframe {
     max-width: 100%;
   }

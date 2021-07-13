@@ -42,6 +42,61 @@ const ALIASES = new Map([["sh", "shell"]]);
 // this, it should become a flaw.
 const IGNORE = new Set(["none", "text", "plain", "unix"]);
 
+const JS_KEYWORD_DOCS = {
+  var: "Statements/var",
+  let: "Statements/let",
+  const: "Statements/const",
+
+  import: "Statements/import",
+  as: "Statements/import#rename_multiple_exports_during_import",
+  export: "Statements/export",
+
+  async: "Statements/async_function",
+
+  class: "Statements/class",
+
+  extends: "Classes/extends",
+
+  if: "Statements/if...else",
+  else: "Statements/if...else",
+
+  switch: "Statements/switch",
+  case: "Statements/switch",
+  default: "Statements/switch",
+
+  do: "Statements/do...while",
+  while: "Statements/while",
+  continue: "Statements/continue",
+
+  break: "Statements/break",
+
+  return: "Statements/return",
+
+  throw: "Statements/throw",
+  try: "Statements/try...catch",
+  catch: "Statements/try...catch#conditional_catch-blocks",
+  finally: "Statements/try...catch#the_finally-block",
+
+  function: "Global_Objects/Function",
+  null: "Global_Objects/null",
+  undefined: "Global_Objects/undefined",
+
+  new: "Operators/new",
+  this: "Operators/this",
+  super: "Operators/super",
+  static: "Operators/static",
+
+  delete: "Operators/delete",
+  void: "Operators/void",
+  typeof: "Operators/typeof",
+  instanceof: "Operators/instanceof",
+  await: "Operators/await",
+  yield: "Operators/yield",
+
+  get: "Functions/get",
+  set: "Functions/set",
+};
+
 /**
  * Mutate the `$` instance for by looking for <pre> tags that can be
  * syntax highlighted with Prism.
@@ -80,6 +135,41 @@ function syntaxHighlight($, doc) {
     const code = $pre.text();
     const html = Prism.highlight(code, grammar, name);
     const $code = $("<code>").html(html);
+
+    let hasLinks = false;
+
+    if (name == "js") {
+      $code.find(".keyword").each((i, el) => {
+        const $el = $(el);
+        const keyword = $el.text();
+        const slug = JS_KEYWORD_DOCS[keyword];
+        if (slug) {
+          hasLinks = true;
+          $el.empty().append(
+            $("<a>")
+              .attr({
+                href: `/${doc.locale}/docs/Web/JavaScript/Reference/${slug}`,
+                draggable: false,
+              })
+              .addClass("code-reference-link")
+              .text(keyword)
+          );
+        }
+      });
+    }
+
+    if (hasLinks) {
+      $pre.parent().append(
+        $(
+          "<div><em>You can click underlined keywords to open their reference docs.</em></div>"
+        ).css({
+          "border-left": "6px solid #00458b",
+          margin: "-24px 0 24px 0",
+          "padding-left": "24px",
+          background: "#e6e6e6",
+        })
+      );
+    }
 
     $pre.empty().append($code);
   });

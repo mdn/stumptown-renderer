@@ -3,7 +3,7 @@ import { useSearchParams, useParams, useNavigate } from "react-router-dom";
 import useSWR, { mutate } from "swr";
 
 import { CRUD_MODE } from "../constants";
-import { useGA } from "../ga-context";
+import { gaSendOnNextPage, useGA } from "../ga-context";
 import { useDocumentURL, useCopyExamplesToClipboard } from "./hooks";
 import { Doc } from "./types";
 // Ingredients
@@ -131,6 +131,36 @@ export function Document(props /* TODO: define a TS interface for this */) {
       }
     }
   }, []);
+
+  React.useEffect(() => {
+    if (!doc) {
+      return;
+    }
+    const handleClick = (event) => {
+      if (event.target instanceof HTMLAnchorElement) {
+        gaSendOnNextPage([
+          {
+            hitType: "event",
+            eventCategory: "Code Block Reference Link",
+            eventAction: event.target.textContent,
+          },
+        ]);
+      }
+    };
+    const removeListeners = Array.from(
+      document.querySelectorAll(".code-example")
+    ).map((codeBlock) => {
+      codeBlock.addEventListener("click", handleClick);
+      return () => {
+        codeBlock.removeEventListener("click", handleClick);
+      };
+    });
+    return () => {
+      for (const removeListener of removeListeners) {
+        removeListener();
+      }
+    };
+  }, [doc, ga]);
 
   if (!doc && !error) {
     return <Loading minHeight={600} message="Loading document..." />;
