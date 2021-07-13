@@ -271,20 +271,3 @@ a.new {
     border: 0;
   }
 }
-
-/*
- * style for archived content banner
- * http://localhost:3000/en-us/docs/BrowserID/Specify_an_Email_Address
- */
-.archived {
-  background-color: $yellow-400;
-  padding: math.div($base-spacing, 4);
-  position: fixed;
-  text-align: center;
-  top: 0;
-  width: 100%;
-
-  p {
-    margin: 0;
-  }
-}
