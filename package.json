@@ -136,7 +136,7 @@
     "extend": "^3.0.2",
     "flexsearch": "0.6.32",
     "foreman": "3.0.1",
-    "fuzzyjs": "4.0.4",
+    "fuzzyjs": "5.0.0",
     "fuzzysearch": "1.0.3",
     "history": "5.0.0",
     "html-validate": "4.14.0",

@@ -9870,10 +9870,10 @@ fuse.js@^3.6.1:
   resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-3.6.1.tgz#7de85fdd6e1b3377c23ce010892656385fd9b10c"
   integrity sha512-hT9yh/tiinkmirKrlv4KWOjztdoZo1mx9Qh4KvWqC7isoXwdUY3PNWUxceF4/qO9R6riA2C29jdTOeQOIROjgw==
 
-fuzzyjs@4.0.4:
-  version "4.0.4"
-  resolved "https://registry.yarnpkg.com/fuzzyjs/-/fuzzyjs-4.0.4.tgz#f63b173ef06d85425dce67f9c4999d848cf7a359"
-  integrity sha512-/qzlaZA+6HgztCGWR2yUKH4NYbmS4SjcOlrxQH9mZNpNWo6A32uqSchfGuKeki6LMABxkOxwLyDVNWdj5o60qg==
+fuzzyjs@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/fuzzyjs/-/fuzzyjs-5.0.0.tgz#fe424da385bfdf432a5f8af312478dcdc629f86a"
+  integrity sha512-k1VbvvSBmNuyHIpZ00ut3lCxoxpDejRhmrwG37yEF2KKUMRke35cduBBCF3gZFG5s4gCSc6gA912/eRfEH/7hg==
 
 fuzzysearch@1.0.3:
   version "1.0.3"
