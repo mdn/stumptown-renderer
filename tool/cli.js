@@ -226,19 +226,26 @@ program
     })
   )
 
-  .command("edit", "Spawn your EDITOR for an existing slug")
-  .argument("<slug>", "Slug of the document in question")
+  .command("edit", "Spawn your EDITOR for an existing slug or pathname or URL")
+  .argument(
+    "<slugOrPathnameOrUrl>",
+    "Slug or pathname or URL of the document in question"
+  )
   .argument("[locale]", "Locale", {
     default: DEFAULT_LOCALE,
     validator: [...VALID_LOCALES.values()],
   })
   .action(
     tryOrExit(({ args }) => {
-      const { slug, locale } = args;
+      const { slugOrPathnameOrUrl, locale } = args;
+      const slug = slugOrPathnameOrUrl
+        .replace(/.+([^/]+\/)?docs\/([^#]+)(#.*)?/g, "$2")
+        .replace(/(files\/en-us\/)?(.+?)(\/index\.html)?/g, "$2");
       if (!Document.exists(slug, locale)) {
         throw new Error(`${slug} does not exists for ${locale}`);
       }
       const filePath = Document.fileForSlug(slug, locale);
+      console.log(`Editing ${filePath}`);
       openEditor([filePath]);
     })
   )
