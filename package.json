@@ -139,7 +139,7 @@
     "fuzzyjs": "4.0.4",
     "fuzzysearch": "1.0.3",
     "history": "5.0.0",
-    "html-validate": "4.14.0",
+    "html-validate": "5.1.1",
     "husky": "^6.0.0",
     "ignore-loader": "^0.1.2",
     "jest-environment-jsdom-sixteen": "^2.0.0",

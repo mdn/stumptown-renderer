@@ -2314,13 +2314,12 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
-"@html-validate/stylish@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@html-validate/stylish/-/stylish-1.0.0.tgz#f8700775d8863e7de50564f8d3e6908a5f40ab9d"
-  integrity sha512-NW6TZ7/GA+Z+1fNGDqkxutHQEsDivuN6ZM9ALMqSsDuO1QHJ4Ws1hAecwzvDezwSEXArLcqXd1RqZCYi3GA6KQ==
+"@html-validate/stylish@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@html-validate/stylish/-/stylish-2.0.0.tgz#14ca637038700fee220c4e99c79ac13a800db18c"
+  integrity sha512-lmI4sUZGHpxfWyPtKKrcIbwBbDLXSb+XPEYS1USc46ZzXx/VsnsVqbk3pPIUdEPhd4v72xGS8HDAy/+8wZzlbQ==
   dependencies:
-    chalk "^4.0.0"
-    strip-ansi "^6.0.0"
+    kleur "^4.0.0"
     text-table "^0.2.0"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
@@ -5042,20 +5041,10 @@ ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.2, ajv@^6.12.4, ajv@^6.12.5:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
-ajv@^7.0.0:
-  version "7.0.3"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-7.0.3.tgz#13ae747eff125cafb230ac504b2406cf371eece2"
-  integrity sha512-R50QRlXSxqXcQP5SvKUrw8VZeypvo12i2IX0EeR5PiZ7bEKeHWgzgo264LDadUsCU42lTJVhFikTqJwNeH34gQ==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    json-schema-traverse "^1.0.0"
-    require-from-string "^2.0.2"
-    uri-js "^4.2.2"
-
-ajv@^8.0.1:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.2.0.tgz#c89d3380a784ce81b2085f48811c4c101df4c602"
-  integrity sha512-WSNGFuyWd//XO8n/m/EaOlNLtO0yL8EXT/74LqT4khdhpZjP7lkj/kT5uwRmGitKEVp/Oj7ZUHeGfPtgHhQ5CA==
+ajv@^8.0.0, ajv@^8.0.1:
+  version "8.6.1"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.6.1.tgz#ae65764bf1edde8cd861281cda5057852364a295"
+  integrity sha512-42VLtQUOLefAvKFAQIxIZDaThq6om/PrfP0CYk3/vn+y4BMNkKnbli8ON2QCiHov4KkzOSJ/xSoBJdayiiYvVQ==
   dependencies:
     fast-deep-equal "^3.1.1"
     json-schema-traverse "^1.0.0"
@@ -10733,16 +10722,16 @@ html-tags@^3.1.0:
   resolved "https://registry.yarnpkg.com/html-tags/-/html-tags-3.1.0.tgz#7b5e6f7e665e9fb41f30007ed9e0d41e97fb2140"
   integrity sha512-1qYz89hW3lFDEazhjW0yVAV87lw8lVkrJocr72XmBkMKsoSVJCQx3W8BXsC7hO2qAt8BoVjYjtAcZ9perqGnNg==
 
-html-validate@4.14.0:
-  version "4.14.0"
-  resolved "https://registry.yarnpkg.com/html-validate/-/html-validate-4.14.0.tgz#b70f49cbada3fe7642491b25583dad1d9b9fc5b6"
-  integrity sha512-+QXML6W1ulLl6F98PqnBvscm1kqmfYzPpB2WgBsRHEKI5J6xDGvoyrPC7nb3yS5fKL354wHRZ0vQDCp6s50cVg==
+html-validate@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/html-validate/-/html-validate-5.1.1.tgz#b603d559ddb4550706d0cb033aaa9634dd0fa68d"
+  integrity sha512-tdRTtMuGQfwmB8p3BthGHGNYNCgPi2+AZtXWJYQfZ5ehjw+JQVEZkJILuBY/9mP9TIdgFQW4Ev2bxvdA+Rj6yg==
   dependencies:
     "@babel/code-frame" "^7.10.0"
-    "@html-validate/stylish" "^1.0.0"
+    "@html-validate/stylish" "^2.0.0"
     "@sidvind/better-ajv-errors" "^0.9.0"
     acorn-walk "^8.0.0"
-    ajv "^7.0.0"
+    ajv "^8.0.0"
     deepmerge "^4.2.0"
     espree "^7.3.0"
     glob "^7.1.0"
@@ -10751,6 +10740,7 @@ html-validate@4.14.0:
     kleur "^4.1.0"
     minimist "^1.2.0"
     prompts "^2.0.0"
+    semver "^7.0.0"
 
 html-void-elements@^1.0.0:
   version "1.0.5"
@@ -12758,7 +12748,7 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-kleur@^4.1.0:
+kleur@^4.0.0, kleur@^4.1.0:
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.4.tgz#8c202987d7e577766d039a8cd461934c01cda04d"
   integrity sha512-8QADVssbrFjivHWQU7KkMgptGTl6WAcSdlbBPY4uNF+mWr6DGcKrvY2w4FQJoXch7+fKMjj0dRrL75vk3k23OA==
@@ -17438,7 +17428,7 @@ semver@^6.0.0, semver@^6.1.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
 
-semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5:
+semver@^7.0.0, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5:
   version "7.3.5"
   resolved "https://registry.yarnpkg.com/semver/-/semver-7.3.5.tgz#0b621c879348d8998e4b0e4be94b3f12e6018ef7"
   integrity sha512-PoeGJYh8HK4BTO/a9Tf6ZG3veo/A7ZVsYrSA6J8ny9nb3B1VrpkuN+z9OE5wfE5p6H4LchYZsegiQgbJD94ZFQ==
